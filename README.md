@@ -4,6 +4,8 @@ Este repositorio contiene las presentaciones de las tutorías para los seminario
 
 A continuación se presenta todo el material respectivo a los seminarios y tutorías del primer semestre de 2026.
 
+## Calendario Seminarios
+
 **| Nº de Seminario | Expositores | Fecha Presentación | Fecha Tutoría | Textos | Material Tutoría |**
 |---|---|---|---|---|---|
 | 1 | Catalina Álvarez, Constanza Bustamante y Sebastián Contreras | lunes 30 de marzo | viernes 27 de marzo | textos | pres |
