@@ -10,7 +10,7 @@ A continuación se presenta todo el material respectivo a los seminarios y tutor
 
 | Nº de Seminario | Expositores(as) | Fecha Presentación | Fecha Tutoría | Material Tutoría |
 |---|---|---|---|---|
-| 1 | Catalina Álvarez, Constanza Bustamante y Sebastián Contreras | lunes 30 de marzo | viernes 27 de marzo | [`[Pres]`]() |
+| 1 | Catalina Álvarez, Constanza Bustamante y Sebastián Contreras | lunes 30 de marzo | viernes 27 de marzo | [`[Pres]`](https://rawcdn.githack.com/vmuhlenbrock/Tutorias-SOL316/c54cf67fb944bcd8c7dcf12ea697623118feb06c/Presentaciones/Tutori%CC%81a_Seminario1.html) |
 | 2 | Felipe Reyes | miércoles 1 de abril | martes 31 de marzo | [`[Pres]`](https://rawcdn.githack.com/vmuhlenbrock/Tutorias-SOL316/81cd4dd3abe23726e0e2c685e611c05d55699378/Presentaciones/Tutori%CC%81a_Seminario2.html) |
 | 3 | Cecilia Astorga y Catalina de la Barrera | lunes 20 de abril | viernes 17 de abril | [`[Pres]`](https://rawcdn.githack.com/vmuhlenbrock/Tutorias-SOL316/81cd4dd3abe23726e0e2c685e611c05d55699378/Presentaciones/Tutori%CC%81a_Seminario3.html) |
 | 4 | Matías de Ruyt, Javiera González y Agustina Lavín | miércoles 22 de marzo | viernes 17 de abril | [`[Pres]`](https://rawcdn.githack.com/vmuhlenbrock/Tutorias-SOL316/81cd4dd3abe23726e0e2c685e611c05d55699378/Presentaciones/Tutori%CC%81a_Seminario4.html) |
