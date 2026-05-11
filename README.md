@@ -1,6 +1,6 @@
 # Tutorías SOL316 Sociedad, Naturaleza y Tecnología
 
-Este repositorio contiene las presentaciones de las tutorías para los seminarios del curso **SOL316 Sociedad, Naturaleza y Tecnología**, curso que es optativo de profundización de la carrera de sociología en la Pontificia Universidad Católica de Chile.
+Este repositorio contiene las presentaciones de las tutorías para los seminarios del curso **SOL316 Sociedad, Naturaleza y Tecnología**, curso impartido por el profesor Beltrán Undurraga y que es optativo de profundización de la carrera de sociología en la Pontificia Universidad Católica de Chile.
 
 A continuación se presenta todo el material respectivo a los seminarios y tutorías del primer semestre de 2026.
 
