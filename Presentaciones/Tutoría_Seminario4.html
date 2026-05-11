@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOL316 — Seminario 4</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    background: #f5f3ee;
+    color: #1a1a1a;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 2rem 1rem 4rem;
+  }
+
+  .slide-wrapper { width: 100%; max-width: 960px; }
+
+  .slide { display: none; animation: fadeIn 0.3s ease; }
+  .slide.active { display: block; }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+  .slide-title {
+    min-height: 480px;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: #1a1a1a;
+    border-radius: 12px;
+    padding: 3rem 2rem;
+    color: #f5f3ee;
+  }
+  .slide-title.active { display: flex; }
+
+  .title-seminario {
+    font-size: 13px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #aaa;
+    margin-bottom: 1.5rem;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-weight: 400;
+  }
+
+  .title-main {
+    font-size: 2.4rem;
+    font-weight: 400;
+    line-height: 1.25;
+    color: #f5f3ee;
+    max-width: 640px;
+  }
+
+  .title-main em { font-style: italic; color: #c8c0a8; }
+
+  .slide-content {
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #e0ddd5;
+  }
+
+  .slide-header {
+    padding: 1.6rem 2rem 1.4rem;
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+  }
+
+  .author-tag {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+    opacity: 0.75;
+    color: #fff;
+  }
+
+  .slide-title-text {
+    font-size: 1.55rem;
+    font-weight: 400;
+    line-height: 1.3;
+    color: #fff;
+  }
+
+  .theme-esposito .slide-header { background: #534AB7; }
+  .theme-fourcade .slide-header { background: #854F0B; }
+
+  .theme-esposito .section-label { color: #534AB7; }
+  .theme-fourcade .section-label { color: #854F0B; }
+
+  .theme-esposito .section-block { border-left-color: #CECBF6; }
+  .theme-fourcade .section-block { border-left-color: #FAC775; }
+
+  .slide-body {
+    padding: 1.6rem 2rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2rem;
+  }
+
+  .section-block {
+    border-left: 3px solid #ddd;
+    padding-left: 1rem;
+  }
+
+  .section-label {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 0.6rem;
+  }
+
+  .item-list { list-style: none; padding: 0; }
+
+  .item-list li {
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: #2a2a2a;
+    padding: 0.3rem 0 0.3rem 1rem;
+    position: relative;
+    border-bottom: 1px solid #f0ede6;
+  }
+
+  .item-list li:last-child { border-bottom: none; }
+
+  .item-list li::before {
+    content: "—";
+    position: absolute;
+    left: 0;
+    color: #aaa;
+    font-size: 12px;
+  }
+
+  .tesis-block {
+    background: #faf9f6;
+    border: 1px solid #e8e4db;
+    border-radius: 8px;
+    padding: 1rem 1.2rem;
+    grid-column: 1 / -1;
+  }
+
+  .tesis-block .section-label { margin-bottom: 0.5rem; }
+
+  .tesis-block p {
+    font-size: 14.5px;
+    line-height: 1.7;
+    color: #1a1a1a;
+  }
+
+  .nav-bar {
+    width: 100%;
+    max-width: 960px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 1.4rem;
+    gap: 1rem;
+  }
+
+  .nav-btn {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 13px;
+    padding: 0.55rem 1.4rem;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    cursor: pointer;
+    color: #333;
+    transition: background 0.15s, border-color 0.15s;
+    letter-spacing: 0.03em;
+  }
+
+  .nav-btn:hover { background: #f0ede6; border-color: #aaa; }
+  .nav-btn:disabled { opacity: 0.3; cursor: default; background: #fff; }
+
+  .slide-counter {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 12px;
+    color: #888;
+    letter-spacing: 0.08em;
+  }
+
+  .dot-nav { display: flex; gap: 6px; align-items: center; }
+
+  .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: #ccc;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+  }
+
+  .dot.active { background: #555; transform: scale(1.25); }
+  .dot.is-title { border-radius: 2px; }
+
+  @media (max-width: 600px) {
+    .slide-body { grid-template-columns: 1fr; }
+    .title-main { font-size: 1.7rem; }
+    .slide-title { min-height: 360px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="slide-wrapper" id="slideContainer">
+
+  <!-- SLIDE 1 — Portada -->
+  <div class="slide slide-title active" id="slide-1">
+    <div class="title-seminario">SOL316 · Tutoría</div>
+    <h1 class="title-main">Seminario 4<br><em>Elena Esposito &amp;<br>Marion Fourcade &amp; Kieran Healey</em></h1>
+  </div>
+
+  <!-- SLIDE 2 — Esposito I -->
+  <div class="slide slide-content theme-esposito" id="slide-2">
+    <div class="slide-header">
+      <div class="author-tag">Elena Esposito · I</div>
+      <div class="slide-title-text"><em>Artificial Communication? Algorithms as Interaction Partners</em></div>
+    </div>
+    <div class="slide-body">
+      <div class="tesis-block">
+        <div class="section-label">Tesis central</div>
+        <p>Los algoritmos modernos no reproducen <strong>inteligencia artificial</strong> sino <strong>comunicación artificial</strong>. Su éxito radica precisamente en haber abandonado el intento de comprensión: así como los humanos lograron volar solo cuando dejaron de imitar el aleteo de los pájaros, el procesamiento digital logró sus resultados actuales al abandonar la ambición de replicar la mente humana.</p>
+      </div>
+
+      <div class="section-block">
+        <div class="section-label">Del paradigma IA al paradigma comunicativo</div>
+        <ul class="item-list">
+          <li>Los programas de IA de los años 70–80 buscaban imitar la inteligencia humana por analogía. Los algoritmos actuales, basados en <em>big data</em> y <em>machine learning</em>, han abandonado explícitamente esa ambición.</li>
+          <li>Los programas de traducción no comprenden los textos que traducen; los correctores ortográficos corrigen sin conocer las reglas gramaticales; los algoritmos de recomendación no saben nada sobre las películas o canciones que sugieren. Y sin embargo, funcionan.</li>
+          <li>Lo que estos sistemas reproducen no es inteligencia sino <em>competencia comunicativa</em>: la capacidad de generar respuestas pertinentes sin comprender su contenido.</li>
+        </ul>
+      </div>
+
+      <div class="section-block">
+        <div class="section-label">Luhmann: comunicación sin comprensión compartida</div>
+        <ul class="item-list">
+          <li>Luhmann rechazó definir la comunicación en referencia a sujetos conscientes. La comunicación ocurre cuando el receptor <em>comprende que alguien dijo algo</em> —no cuando emisor y receptor convergen en un pensamiento común.</li>
+          <li>Definir la comunicación desde el receptor elimina el requisito de comprensión compartida. Este giro se vuelve decisivo al tratar con algoritmos que no piensan: el obstáculo teórico desaparece.</li>
+          <li>La información es siempre relativa al observador: el receptor obtiene información diferente de lo que el emisor tenía en mente; los pensamientos de los participantes no son parte de la comunicación misma.</li>
+        </ul>
+      </div>
+
+      <div class="section-block">
+        <div class="section-label">Contingencia virtual y Googlización</div>
+        <ul class="item-list">
+          <li><strong>Contingencia virtual:</strong> los algoritmos no generan contingencia propia; reflejan y reconfiguran la contingencia de otros usuarios. Lo que el sistema presenta son perspectivas de millones de observadores procesadas algorítmicamente.</li>
+          <li><strong>Googlización:</strong> los algoritmos explotan <em>parasitariamente</em> la participación masiva de usuarios en la web. La comunicación artificial no sería posible sin esa participación masiva previa —es estructuralmente dependiente de ella.</li>
+          <li>Los algoritmos pueden ser <em>explicables</em> sin ser <em>comprensibles</em>: el requisito es que tengan suficiente competencia comunicativa para responder a solicitudes de aclaración de manera apropiada y controlable.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 3 — Esposito II -->
+  <div class="slide slide-content theme-esposito" id="slide-3">
+    <div class="slide-header">
+      <div class="author-tag">Elena Esposito · II</div>
+      <div class="slide-title-text">Preguntas, problematizaciones y aportes</div>
+    </div>
+    <div class="slide-body">
+      <div class="section-block">
+        <div class="section-label">Preguntas que orienta el texto</div>
+        <ul class="item-list">
+          <li>¿Qué tipo de comunicación se produce cuando uno de los interlocutores no comprende el contenido que procesa? ¿Sigue siendo comunicación en sentido pleno?</li>
+          <li>¿Puede haber comunicación sin sujetos conscientes, y qué implicaciones tiene esto para la teoría sociológica de la comunicación?</li>
+          <li>¿Qué significa que un algoritmo sea "explicable" pero no "comprensible"? ¿Es suficiente la explicabilidad para garantizar confianza y control social?</li>
+          <li>¿La relación parasitaria de los algoritmos con la participación web genera una nueva forma de socialidad o es simplemente extracción?</li>
+        </ul>
+      </div>
+
+      <div class="section-block">
+        <div class="section-label">Problematizaciones</div>
+        <ul class="item-list">
+          <li>Problematiza la categoría misma de "inteligencia artificial": lo que los algoritmos hacen no es inteligir sino participar comunicativamente. El debate público usa el marco equivocado.</li>
+          <li>Cuestiona los modelos de comunicación centrados en la comprensión compartida o en la intención del emisor —prevalentes en la teoría social y la filosofía del lenguaje.</li>
+          <li>Desafía la frontera entre humano y no-humano en la participación comunicativa: si la comunicación no requiere sujetos conscientes, los algoritmos son interlocutores legítimos.</li>
+          <li>Interroga si la "Googlización" es parasitismo unilateral o si configura una nueva forma de mediación social con lógica propia.</li>
+        </ul>
+      </div>
+
+      <div class="section-block">
+        <div class="section-label">Aportes teóricos</div>
+        <ul class="item-list">
+          <li><strong>Comunicación artificial:</strong> nueva categoría analítica para describir las interacciones entre humanos y algoritmos, irreducible a la inteligencia artificial o a la simulación de la mente.</li>
+          <li><strong>Contingencia virtual:</strong> mecanismo por el cual los algoritmos actúan como interlocutores competentes usando como recurso la contingencia de millones de usuarios previos.</li>
+          <li><strong>Aplicación productiva de Luhmann:</strong> la teoría de sistemas, criticada por su rechazo a los sujetos conscientes, resulta precisamente adecuada para el análisis de la comunicación digital.</li>
+          <li><strong>Distinción IA vs. comunicación artificial:</strong> reorienta el debate desde "¿pueden los algoritmos pensar?" hacia "¿pueden los algoritmos comunicarse?", con implicaciones distintas para la sociología y la ética.</li>
+        </ul>
+      </div>
+
+      <div class="section-block">
+        <div class="section-label">Diálogo con Fourcade &amp; Healey</div>
+        <ul class="item-list">
+          <li>Esposito habla de "explotación parasitaria" de la participación web; Fourcade y Healey hablan de "exfiltración de la socialidad". Ambos describen el mismo fenómeno desde marcos distintos: comunicativo el primero, económico-político el segundo.</li>
+          <li>Donde Esposito ve un fenómeno comunicativo novedoso que requiere nuevas categorías, Fourcade y Healey ven ante todo un fenómeno económico que reproduce desigualdades bajo apariencia de gratuidad.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 4 — Fourcade & Healey I -->
+  <div class="slide slide-content theme-fourcade" id="slide-4">
+    <div class="slide-header">
+      <div class="author-tag">Marion Fourcade &amp; Kieran Healey · I</div>
+      <div class="slide-title-text"><em>The Box of Delights</em></div>
+    </div>
+    <div class="slide-body">
+      <div class="tesis-block">
+        <div class="section-label">Tesis central</div>
+        <p>El capitalismo digital se sostiene en la tensión irresuelta entre <strong>deleite tecnológico</strong> y <strong>desposesión de datos</strong>. La teoría social crítica, al sobreestimar el funcionamiento de la tecnología y subestimar el poder del deleite, se convierte en imagen especular —invertida pero igualmente distorsionada— del optimismo de Silicon Valley.</p>
+      </div>
+
+      <div class="section-block">
+        <div class="section-label">Las dos experiencias de la tecnología</div>
+        <ul class="item-list">
+          <li><strong>La experiencia mala:</strong> el software que no funciona, los asistentes virtuales que operan en márgenes estrechos de sintaxis, las bombillas "inteligentes" que no encienden. La ilusión de interactividad colapsa en cuanto el usuario se desvía mínimamente del camino esperado.</li>
+          <li><strong>La experiencia del deleite:</strong> la sensación de que una pieza de tecnología "simplemente funciona", que anticipa correctamente las necesidades y actúa en consecuencia. Puede ser un fin en sí misma, sin propósito útil alguno.</li>
+          <li>La teoría social <em>subestima</em> el deleite: cuando una tecnología lo entrega, la gente la ama, la busca y la comparte. La crítica —que lo reduce a gubernamentalidad neoliberal— no comprende su fuerza social real.</li>
+        </ul>
+      </div>
+
+      <div class="section-block">
+        <div class="section-label">La crítica de la crítica</div>
+        <ul class="item-list">
+          <li>Las teorías socio-científicas de la tecnología <em>sobreestiman</em> la frecuencia con que la tecnología funciona correctamente. Los teóricos no cometen este error en sus propias vidas —llenas de laptops que fallan y softwares torpes— pero en sus teorías, los algoritmos gobiernan sin falla.</li>
+          <li>La crítica se convierte así en "imagen especular" del <em>pitch deck</em> optimista: invierte los valores (euforia → crítica) pero mantiene el supuesto central de que la tecnología funciona y sus efectos son totales.</li>
+        </ul>
+      </div>
+
+      <div class="section-block">
+        <div class="section-label"><em>Datum</em> versus <em>captum</em> y la captología</div>
+        <ul class="item-list">
+          <li>Howard Becker señaló que usamos <em>datum</em> ("lo dado") en lugar de <em>captum</em> ("lo tomado"). El <em>big data</em> es, en realidad, <em>big capta</em>: los datos son capturados, no ofrecidos libremente.</li>
+          <li><strong>Captología:</strong> programa de investigación de Stanford dedicado a descubrir las estrategias de diseño psicosocial más efectivas para dirigir el comportamiento de los usuarios, con foco en formación de hábitos y técnicas adictivas similares a las de la industria del juego.</li>
+          <li><strong>Acumulación primitiva digital:</strong> la expansión de la recolección de datos reproduce la lógica marxiana del cercamiento (<em>enclosure</em>): desposesión de recursos íntimos y valiosos a través de prácticas predatorias presentadas como el orden natural de las cosas.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5 — Fourcade & Healey II -->
+  <div class="slide slide-content theme-fourcade" id="slide-5">
+    <div class="slide-header">
+      <div class="author-tag">Marion Fourcade &amp; Kieran Healey · II</div>
+      <div class="slide-title-text">Preguntas, problematizaciones y aportes</div>
+    </div>
+    <div class="slide-body">
+      <div class="section-block">
+        <div class="section-label">El <em>bargain</em> maussiano y la exfiltración</div>
+        <ul class="item-list">
+          <li><strong>Regalos cargados:</strong> los servicios digitales entran en la vida de las personas como regalos gratuitos, pero implican reciprocación encubierta. Lo que se entrega a cambio —datos personales, red social— solo cobra existencia a través de la relación misma.</li>
+          <li>La voluntariedad del intercambio es una mistificación que naturaliza la asimetría estructural: la infraestructura de los servicios se ha vuelto parte integral de la vida social; la ventaja está enteramente del lado corporativo.</li>
+          <li><strong>Exfiltración de la socialidad:</strong> las firmas aprendieron a reconvertir las trazas digitales de la interacción social en valor económico. Las actividades humanas son reconfiguradas como procesos abstractos de producción de información —lo que McKenzie Wark llama un "<em>hack</em>".</li>
+        </ul>
+      </div>
+
+      <div class="section-block">
+        <div class="section-label">Preguntas que orienta el texto</div>
+        <ul class="item-list">
+          <li>¿Cómo coexisten el deleite genuino y la desposesión estructural en la experiencia cotidiana de la tecnología? ¿Son incompatibles o forman parte del mismo dispositivo?</li>
+          <li>¿Por qué la teoría social crítica tiende a convertirse en imagen especular del optimismo tecnológico? ¿Qué supuesto comparten?</li>
+          <li>¿Puede considerarse voluntario un intercambio cuya dimensión económica es sistemáticamente desconocida por una de las partes?</li>
+          <li>¿Qué tipo de crítica social es capaz de dar cuenta simultáneamente del deleite y de la desposesión sin reducir uno al otro?</li>
+        </ul>
+      </div>
+
+      <div class="section-block">
+        <div class="section-label">Problematizaciones</div>
+        <ul class="item-list">
+          <li>Cuestiona tanto el optimismo tecnológico (la tecnología siempre funciona y libera) como la crítica totalizadora (la tecnología siempre funciona y domina): ambos sobreestiman la eficacia técnica.</li>
+          <li>Problematiza el concepto de consentimiento en el capitalismo digital: la "elección libre" de inscribirse en servicios digitales ocurre bajo condiciones de asimetría masiva de información y poder.</li>
+          <li>Desafía la distinción don/mercancía: los intercambios digitales son simultáneamente dones (gratuitos, generosos) y mercancías (extractivos, asimétricos).</li>
+        </ul>
+      </div>
+
+      <div class="section-block">
+        <div class="section-label">Aportes teóricos</div>
+        <ul class="item-list">
+          <li><strong><em>Bargain</em> maussiano digital:</strong> aplicación del concepto de intercambio de dones de Mauss al capitalismo digital; los "regalos cargados" naturalizan relaciones estructuralmente asimétricas.</li>
+          <li><strong>Exfiltración de la socialidad:</strong> concepto que captura la reconversión de las interacciones sociales en valor económico extraíble, con su dimensión tanto técnica como política.</li>
+          <li><strong>Datum/captum:</strong> distinción analítica que visibiliza la naturaleza extractiva y activa de la recolección de datos.</li>
+          <li><strong>Posición epistemológica intermedia:</strong> ni optimismo ni crítica totalizadora, sino análisis de la tensión productiva entre deleite y desposesión como motor del capitalismo digital.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Navigation -->
+<div class="nav-bar">
+  <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)" disabled>← Anterior</button>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+    <div class="dot-nav" id="dotNav"></div>
+    <span class="slide-counter" id="slideCounter">1 / 5</span>
+  </div>
+  <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">Siguiente →</button>
+</div>
+
+<script>
+  const total = 5;
+  let current = 1;
+  const dotNav = document.getElementById('dotNav');
+
+  for (let i = 1; i <= total; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 1 ? ' is-title' : '');
+    d.title = 'Slide ' + i;
+    d.onclick = () => goTo(i);
+    dotNav.appendChild(d);
+  }
+
+  function goTo(n) {
+    document.getElementById('slide-' + current).classList.remove('active');
+    current = n;
+    document.getElementById('slide-' + current).classList.add('active');
+    document.getElementById('slideCounter').textContent = current + ' / ' + total;
+    document.getElementById('prevBtn').disabled = current === 1;
+    document.getElementById('nextBtn').disabled = current === total;
+    document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i + 1 === current));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function changeSlide(dir) {
+    const next = current + dir;
+    if (next >= 1 && next <= total) goTo(next);
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') changeSlide(1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   changeSlide(-1);
+  });
+
+  goTo(1);
+</script>
+</body>
+</html>

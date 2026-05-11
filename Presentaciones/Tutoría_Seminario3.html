@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOL316 — Seminario 3</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    background: #f5f3ee;
+    color: #1a1a1a;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 2rem 1rem 4rem;
+  }
+
+  .slide-wrapper { width: 100%; max-width: 960px; }
+
+  .slide { display: none; animation: fadeIn 0.3s ease; }
+  .slide.active { display: block; }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+  .slide-title {
+    min-height: 480px;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: #1a1a1a;
+    border-radius: 12px;
+    padding: 3rem 2rem;
+    color: #f5f3ee;
+  }
+  .slide-title.active { display: flex; }
+
+  .title-seminario {
+    font-size: 13px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #aaa;
+    margin-bottom: 1.5rem;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-weight: 400;
+  }
+
+  .title-main {
+    font-size: 2.4rem;
+    font-weight: 400;
+    line-height: 1.25;
+    color: #f5f3ee;
+    max-width: 640px;
+  }
+
+  .title-main em { font-style: italic; color: #c8c0a8; }
+
+  .slide-content {
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #e0ddd5;
+  }
+
+  .slide-header {
+    padding: 1.6rem 2rem 1.4rem;
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+  }
+
+  .author-tag {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+    opacity: 0.75;
+    color: #fff;
+  }
+
+  .slide-title-text {
+    font-size: 1.55rem;
+    font-weight: 400;
+    line-height: 1.3;
+    color: #fff;
+  }
+
+  .theme-callon   .slide-header { background: #185FA5; }
+  .theme-jasanoff .slide-header { background: #0F6E56; }
+
+  .theme-callon   .section-label { color: #185FA5; }
+  .theme-jasanoff .section-label { color: #0F6E56; }
+
+  .theme-callon   .section-block { border-left-color: #B5D4F4; }
+  .theme-jasanoff .section-block { border-left-color: #9FE1CB; }
+
+  .slide-body {
+    padding: 1.6rem 2rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2rem;
+  }
+
+  .section-block {
+    border-left: 3px solid #ddd;
+    padding-left: 1rem;
+  }
+
+  .section-label {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 0.6rem;
+  }
+
+  .item-list { list-style: none; padding: 0; }
+
+  .item-list li {
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: #2a2a2a;
+    padding: 0.3rem 0 0.3rem 1rem;
+    position: relative;
+    border-bottom: 1px solid #f0ede6;
+  }
+
+  .item-list li:last-child { border-bottom: none; }
+
+  .item-list li::before {
+    content: "—";
+    position: absolute;
+    left: 0;
+    color: #aaa;
+    font-size: 12px;
+  }
+
+  .tesis-block {
+    background: #faf9f6;
+    border: 1px solid #e8e4db;
+    border-radius: 8px;
+    padding: 1rem 1.2rem;
+    grid-column: 1 / -1;
+  }
+
+  .tesis-block .section-label { margin-bottom: 0.5rem; }
+
+  .tesis-block p {
+    font-size: 14.5px;
+    line-height: 1.7;
+    color: #1a1a1a;
+  }
+
+  .nav-bar {
+    width: 100%;
+    max-width: 960px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 1.4rem;
+    gap: 1rem;
+  }
+
+  .nav-btn {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 13px;
+    padding: 0.55rem 1.4rem;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    cursor: pointer;
+    color: #333;
+    transition: background 0.15s, border-color 0.15s;
+    letter-spacing: 0.03em;
+  }
+
+  .nav-btn:hover { background: #f0ede6; border-color: #aaa; }
+  .nav-btn:disabled { opacity: 0.3; cursor: default; background: #fff; }
+
+  .slide-counter {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 12px;
+    color: #888;
+    letter-spacing: 0.08em;
+  }
+
+  .dot-nav { display: flex; gap: 6px; align-items: center; }
+
+  .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: #ccc;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+  }
+
+  .dot.active { background: #555; transform: scale(1.25); }
+  .dot.is-title { border-radius: 2px; }
+
+  @media (max-width: 600px) {
+    .slide-body { grid-template-columns: 1fr; }
+    .title-main { font-size: 1.7rem; }
+    .slide-title { min-height: 360px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="slide-wrapper" id="slideContainer">
+
+  <!-- SLIDE 1 — Portada -->
+  <div class="slide slide-title active" id="slide-1">
+    <div class="title-seminario">SOL316 · Tutoría</div>
+    <h1 class="title-main">Seminario 3<br><em>Michel Callon &amp; Sheila Jasanoff</em></h1>
+  </div>
+
+  <!-- SLIDE 2 — Callon I -->
+  <div class="slide slide-content theme-callon" id="slide-2">
+    <div class="slide-header">
+      <div class="author-tag">Michel Callon · I</div>
+      <div class="slide-title-text"><em>El proceso de construcción de la sociedad</em></div>
+    </div>
+    <div class="slide-body">
+      <div class="tesis-block">
+        <div class="section-label">Tesis central</div>
+        <p>La tecnología puede ser una <strong>herramienta para el análisis sociológico</strong>, no solo su objeto. Los ingenieros que diseñan nuevas tecnologías construyen hipótesis sociológicas implícitas y se transforman, lo quieran o no, en <em>ingenieros-sociólogos</em>. Esta inversión de perspectiva es tan posible como deseable para las ciencias sociales.</p>
+      </div>
+
+      <div class="section-block">
+        <div class="section-label">Argumentos principales</div>
+        <ul class="item-list">
+          <li><strong>Crítica al modelo lineal:</strong> las dimensiones técnicas, sociales, económicas y políticas se hallan inextricablemente ligadas desde el inicio del proceso innovativo —no en fases sucesivas y separables. Lo técnico y lo social forman un "tejido sin costuras" (Hughes).</li>
+          <li><strong>El caso VEL:</strong> los ingenieros de EDF no solo proyectaron un vehículo eléctrico; proyectaron simultáneamente una sociedad francesa post-industrial con nuevos movimientos sociales, nuevos consumidores y nuevas relaciones de poder. La red incluyó por igual activistas, electrones y electrodos.</li>
+          <li><strong>Controversia Touraine–Bourdieu:</strong> los ingenieros de EDF sostenían, sin saberlo, una sociología tourainiana; los de Renault, una bourdieuana. El fracaso del VEL fue el fracaso de una teoría sociológica, verificada en el mercado.</li>
+        </ul>
+      </div>
+
+      <div class="section-block">
+        <div class="section-label">El concepto de actor-red</div>
+        <ul class="item-list">
+          <li>Un <em>actor-red</em> es una asociación de entidades heterogéneas —humanos y no-humanos, elementos técnicos y sociales— que co-producen simultáneamente sociedad y tecnología.</li>
+          <li>El <em>enrolamiento</em> es el proceso por el cual se reclutan y alinean actores heterogéneos en torno a un proyecto. La fuerza de la red depende de la durabilidad de sus vínculos y de la capacidad de simplificar y movilizar cada nodo.</li>
+          <li>La ventaja del actor-red frente al concepto de <em>sistema</em>: evita definir fronteras rígidas entre sistema y entorno y describe asociaciones dinámicas sin jerarquías a priori.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 3 — Callon II -->
+  <div class="slide slide-content theme-callon" id="slide-3">
+    <div class="slide-header">
+      <div class="author-tag">Michel Callon · II</div>
+      <div class="slide-title-text">Preguntas, problematizaciones y aportes</div>
+    </div>
+    <div class="slide-body">
+      <div class="section-block">
+        <div class="section-label">Preguntas que orienta el texto</div>
+        <ul class="item-list">
+          <li>¿Puede el estudio de la tecnología transformarse en un instrumento metodológico para la sociología —no solo en un objeto de estudio más?</li>
+          <li>¿Es posible distinguir fases puramente técnicas de fases guiadas por lógica social o económica en el proceso de innovación? ¿Tiene sentido esa distinción?</li>
+          <li>¿Qué sucede cuando la sociología implícita construida por los ingenieros se enfrenta a la prueba del mercado y fracasa?</li>
+          <li>¿Quién tiene autoridad legítima para "hacer sociología": solo los académicos, o también los actores prácticos que deben movilizar aliados heterogéneos?</li>
+        </ul>
+      </div>
+
+      <div class="section-block">
+        <div class="section-label">Problematizaciones</div>
+        <ul class="item-list">
+          <li>Cuestiona la separación disciplinaria entre análisis técnico y análisis social, mostrando que ambas operaciones son inseparables en la práctica innovativa.</li>
+          <li>Problematiza el monopolio académico sobre el conocimiento social: los ingenieros producen sociología táctica sin saberlo.</li>
+          <li>Desafía la jerarquía ontológica entre actores humanos y no-humanos: el acumulador de plomo es analíticamente equivalente al activista, en tanto ambos deben ser enrolados.</li>
+        </ul>
+      </div>
+
+      <div class="section-block">
+        <div class="section-label">Aportes teóricos</div>
+        <ul class="item-list">
+          <li><strong>Actor-red (ANT):</strong> marco que reconoce la agencia distribuida entre entidades heterogéneas y describe dinámicamente sus asociaciones sin fijar fronteras.</li>
+          <li><strong>Simetría radical:</strong> principio metodológico que exige tratar a humanos y no-humanos con las mismas categorías analíticas.</li>
+          <li><strong>Ingeniero-sociólogo:</strong> figura conceptual que visibiliza la producción implícita de conocimiento social en el proceso técnico.</li>
+          <li><strong>Enrolamiento y traducción:</strong> mecanismos que explican cómo se construye y estabiliza una red sociotécnica.</li>
+        </ul>
+      </div>
+
+      <div class="section-block">
+        <div class="section-label">Relación con Jasanoff</div>
+        <ul class="item-list">
+          <li>Jasanoff reconoce la deuda con la ANT de Callon y Latour, pero señala que su metáfora de redes es "desconfortablemente plana": no da cuenta del poder, la normatividad ni la larga duración histórica.</li>
+          <li>Los imaginarios sociotécnicos son, en parte, una respuesta al déficit normativo y temporal de la ANT.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 4 — Jasanoff I -->
+  <div class="slide slide-content theme-jasanoff" id="slide-4">
+    <div class="slide-header">
+      <div class="author-tag">Sheila Jasanoff · I</div>
+      <div class="slide-title-text"><em>Future Imperfect: Science, Technology, and the Imaginations of Modernity</em></div>
+    </div>
+    <div class="slide-body">
+      <div class="tesis-block">
+        <div class="section-label">Tesis central</div>
+        <p>La ciencia y la tecnología son <strong>co-producidas</strong> con el orden social: no pueden estudiarse como objetos separados. Para superar las limitaciones analíticas de la ANT, Jasanoff propone los <em>imaginarios sociotécnicos</em>: visiones colectivamente sostenidas, institucionalmente estabilizadas y públicamente performadas de futuros deseables, que se apoyan en y sostienen avances en ciencia y tecnología.</p>
+      </div>
+
+      <div class="section-block">
+        <div class="section-label">Argumentos principales</div>
+        <ul class="item-list">
+          <li><strong>Coproducción:</strong> el conocimiento científico no es un espejo trascendente de la realidad, sino que se inserta —y es insertado— en prácticas sociales, identidades, normas, instituciones y tecnologías. La sociedad no puede funcionar sin conocimiento; el conocimiento no puede existir sin sus soportes sociales.</li>
+          <li><strong>CF como fabulación social:</strong> obras como <em>Frankenstein</em>, <em>1984</em> o <em>2001</em> no anticipan solo tecnologías sino mundos sociales enteros. El monstruo de Shelley es violento porque es excluido; el Capitán Nemo busca libertad frente al colonialismo; HAL anticipa los debates sobre vigilancia estatal.</li>
+          <li><strong>Crítica a la ANT:</strong> la metáfora de redes es "desconfortablemente plana" —describe asociaciones pero no explica por qué ciertas configuraciones prevalecen, por qué algunos futuros son deseados y otros no, ni cómo las redes colapsan en momentos de crisis histórica.</li>
+        </ul>
+      </div>
+
+      <div class="section-block">
+        <div class="section-label">Los cuatro problemas que resuelven los imaginarios</div>
+        <ul class="item-list">
+          <li><strong>Diferencia:</strong> ¿por qué países con sistemas políticos similares responden de manera divergente a los mismos eventos tecnocientíficos? Las respuestas a Chernóbil o a la biotecnología difieren porque los eventos son absorbidos en imaginarios preexistentes.</li>
+          <li><strong>Tiempo y cambio:</strong> ¿por qué las expectativas permanecen estables durante largas duraciones? ¿Y de dónde proviene el impulso cuando ocurre un cambio radical?</li>
+          <li><strong>Espacio y escala:</strong> los imaginarios reconfiguran el sentido de los posibles espacios de acción, desde la localidad hasta el planeta.</li>
+          <li><strong>Identidad colectiva:</strong> conecta las visiones de los gobernantes con la autocomprensión de los sujetos —en línea con el análisis foucaultiano del poder capilar y el <em>habitus</em> de Bourdieu.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5 — Jasanoff II -->
+  <div class="slide slide-content theme-jasanoff" id="slide-5">
+    <div class="slide-header">
+      <div class="author-tag">Sheila Jasanoff · II</div>
+      <div class="slide-title-text">Preguntas, problematizaciones y aportes</div>
+    </div>
+    <div class="slide-body">
+      <div class="section-block">
+        <div class="section-label">Preguntas que orienta el texto</div>
+        <ul class="item-list">
+          <li>¿Por qué democracias liberales con aspiraciones compartidas producen respuestas divergentes ante los mismos desarrollos tecnocientíficos (energía nuclear, biotecnología, nanotecnología)?</li>
+          <li>¿Cómo conectan pasado y futuro en la constitución de un orden sociotécnico? ¿Qué mecanismos permiten que los imaginarios permanezcan estables durante largas duraciones?</li>
+          <li>¿Quién define los imaginarios dominantes y a través de qué procesos institucionales son estabilizados y performados públicamente?</li>
+          <li>¿Cómo puede la teoría social dar cuenta simultáneamente de la normatividad (¿qué futuros son deseables?) y de la contingencia (¿qué futuros son posibles?)?</li>
+        </ul>
+      </div>
+
+      <div class="section-block">
+        <div class="section-label">Problematizaciones</div>
+        <ul class="item-list">
+          <li>Critica la planitud política de la ANT: describir asociaciones sin preguntarse por el poder y lo deseable es una opción teórica con consecuencias normativas propias.</li>
+          <li>Cuestiona el tratamiento de la tecnología como objeto separado de lo social en el discurso popular y en parte de las ciencias sociales.</li>
+          <li>Problematiza la universalidad del progreso tecnológico: distintas comunidades políticas construyen distintos futuros deseables aun cuando comparten los mismos artefactos.</li>
+          <li>La coproducción avanza más el <em>Verstehen</em> weberiano que el <em>Erklären</em> científico —déficit que los imaginarios buscan subsanar.</li>
+        </ul>
+      </div>
+
+      <div class="section-block">
+        <div class="section-label">Aportes teóricos</div>
+        <ul class="item-list">
+          <li><strong>Imaginarios sociotécnicos:</strong> visiones colectivas de futuros deseables, colectivamente sostenidas, institucionalmente estabilizadas y públicamente performadas; cultural y temporalmente situadas, originadas por individuos pero adoptadas comunalmente.</li>
+          <li><strong>Coproducción:</strong> marco analítico que articula conocimiento científico y orden social sin reducir uno al otro; conecta la epistemología con la política.</li>
+          <li><strong>Dimensiones ausentes en la ANT ahora incorporadas:</strong> normatividad (¿qué futuros son deseados?), temporalidad (conexión pasado–futuro) y poder (¿quién define el imaginario dominante?).</li>
+          <li><strong>Método comparativo transnacional:</strong> herramienta para revelar los compromisos normativos que distinguen a distintas comunidades políticas ante los mismos desarrollos tecnocientíficos.</li>
+        </ul>
+      </div>
+
+      <div class="section-block">
+        <div class="section-label">Genealogía conceptual</div>
+        <ul class="item-list">
+          <li>Los imaginarios sociotécnicos se apoyan en Taylor (imaginarios sociales), Anderson (comunidades imaginadas) y Castoriadis (imaginario instituyente), añadiéndoles la dimensión tecnocientífica específica.</li>
+          <li>La relación con Callon es de <em>genealogía crítica</em>: Jasanoff parte de los hallazgos de la ANT pero los trasciende añadiendo profundidad histórica, comparativa y normativa.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Navigation -->
+<div class="nav-bar">
+  <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)" disabled>← Anterior</button>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+    <div class="dot-nav" id="dotNav"></div>
+    <span class="slide-counter" id="slideCounter">1 / 5</span>
+  </div>
+  <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">Siguiente →</button>
+</div>
+
+<script>
+  const total = 5;
+  let current = 1;
+  const dotNav = document.getElementById('dotNav');
+
+  for (let i = 1; i <= total; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 1 ? ' is-title' : '');
+    d.title = 'Slide ' + i;
+    d.onclick = () => goTo(i);
+    dotNav.appendChild(d);
+  }
+
+  function goTo(n) {
+    document.getElementById('slide-' + current).classList.remove('active');
+    current = n;
+    document.getElementById('slide-' + current).classList.add('active');
+    document.getElementById('slideCounter').textContent = current + ' / ' + total;
+    document.getElementById('prevBtn').disabled = current === 1;
+    document.getElementById('nextBtn').disabled = current === total;
+    document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i + 1 === current));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function changeSlide(dir) {
+    const next = current + dir;
+    if (next >= 1 && next <= total) goTo(next);
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') changeSlide(1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   changeSlide(-1);
+  });
+
+  goTo(1);
+</script>
+</body>
+</html>

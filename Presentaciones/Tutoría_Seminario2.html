@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ayudantía Seminario 2 — Hayles & Beck</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@300;400&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:        #0e0e0e;
+    --surface:   #161616;
+    --border:    #2a2a2a;
+    --text:      #e8e4dc;
+    --muted:     #888;
+    --accent-h:  #c8a96e;   /* warm gold  — Hayles */
+    --accent-b:  #6ea8c8;   /* steel blue — Beck   */
+    --accent-x:  #b06ec8;   /* violet     — cross  */
+    --red:       #c86e6e;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-weight: 300;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  /* ── Navigation dots ─────────────────────────────────── */
+  #nav {
+    position: fixed;
+    right: 22px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 100;
+  }
+  #nav button {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    border: 1px solid var(--muted);
+    background: transparent;
+    cursor: pointer;
+    transition: background .3s, transform .2s;
+  }
+  #nav button.active {
+    background: var(--text);
+    transform: scale(1.4);
+  }
+
+  /* ── Progress bar ───────────────────────────────────── */
+  #progress {
+    position: fixed;
+    top: 0; left: 0;
+    height: 2px;
+    background: var(--accent-h);
+    transition: width .4s ease, background .6s;
+    z-index: 200;
+  }
+
+  /* ── Slide container ────────────────────────────────── */
+  .slide {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 60px 8vw;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* stripe accent on left edge */
+  .slide::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 10%; bottom: 10%;
+    width: 3px;
+    border-radius: 0 2px 2px 0;
+  }
+  .slide.hayles::before { background: var(--accent-h); }
+  .slide.beck::before   { background: var(--accent-b); }
+  .slide.cross::before  { background: var(--accent-x); }
+  .slide.cover::before  { display: none; }
+
+  /* ── Section label ──────────────────────────────────── */
+  .section-tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: .68rem;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    margin-bottom: 18px;
+    opacity: .6;
+  }
+  .hayles .section-tag { color: var(--accent-h); }
+  .beck   .section-tag { color: var(--accent-b); }
+  .cross  .section-tag { color: var(--accent-x); }
+
+  /* ── Typography ─────────────────────────────────────── */
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.8rem, 5.5vw, 5rem);
+    line-height: 1.1;
+    font-weight: 700;
+    letter-spacing: -.02em;
+  }
+  h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.8rem, 3.2vw, 2.8rem);
+    line-height: 1.2;
+    font-weight: 400;
+    margin-bottom: 28px;
+  }
+  h3 {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: .95rem;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    font-weight: 400;
+  }
+  p {
+    max-width: 68ch;
+    color: #c8c4bc;
+    font-size: .97rem;
+    margin-bottom: 10px;
+  }
+
+  /* ── Cover slide ────────────────────────────────────── */
+  .cover {
+    background: var(--bg);
+    justify-content: center;
+    align-items: flex-start;
+    gap: 0;
+  }
+  .cover-eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: .7rem;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 26px;
+  }
+  .cover h1 span {
+    display: block;
+  }
+  .cover h1 .num {
+    color: var(--accent-h);
+    font-style: italic;
+  }
+  .cover-meta {
+    margin-top: 44px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .cover-meta span {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: .72rem;
+    letter-spacing: .14em;
+    color: var(--muted);
+  }
+  .cover-meta strong {
+    color: var(--text);
+    font-weight: 400;
+    font-size: .88rem;
+    font-family: 'IBM Plex Sans', sans-serif;
+    letter-spacing: .04em;
+  }
+  .cover-deco {
+    position: absolute;
+    right: 8vw; bottom: 8vh;
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(8rem, 18vw, 18rem);
+    font-style: italic;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(200,169,110,.08);
+    line-height: 1;
+    user-select: none;
+    pointer-events: none;
+  }
+
+  /* ── Toc dividers ───────────────────────────────────── */
+  .divider {
+    background: var(--surface);
+    min-height: 40vh;
+    display: flex;
+    align-items: center;
+    padding: 48px 8vw;
+    border-left: 4px solid var(--accent-h);
+  }
+  .divider.beck-div  { border-color: var(--accent-b); }
+  .divider.cross-div { border-color: var(--accent-x); }
+  .divider h2 {
+    font-size: clamp(2rem, 4vw, 3.4rem);
+    margin: 0;
+  }
+  .divider .author-note {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: .72rem;
+    color: var(--muted);
+    margin-top: 10px;
+    letter-spacing: .1em;
+  }
+
+  /* ── Pill list ──────────────────────────────────────── */
+  .pill-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 18px;
+  }
+  .pill {
+    padding: 6px 16px;
+    border-radius: 100px;
+    font-size: .82rem;
+    font-family: 'IBM Plex Mono', monospace;
+    border: 1px solid;
+    line-height: 1.4;
+  }
+  .hayles .pill { border-color: var(--accent-h); color: var(--accent-h); }
+  .beck   .pill { border-color: var(--accent-b); color: var(--accent-b); }
+  .cross  .pill { border-color: var(--accent-x); color: var(--accent-x); }
+
+  /* ── Card grid ──────────────────────────────────────── */
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 16px;
+    margin-top: 24px;
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 20px 22px;
+    border-radius: 4px;
+  }
+  .card .card-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: .62rem;
+    color: var(--muted);
+    margin-bottom: 10px;
+    letter-spacing: .1em;
+  }
+  .card p { font-size: .88rem; color: #b0aca4; margin: 0; }
+  .card h4 {
+    font-size: .92rem;
+    font-weight: 500;
+    margin-bottom: 6px;
+    color: var(--text);
+  }
+
+  /* ── Concept box ────────────────────────────────────── */
+  .concept-box {
+    background: var(--surface);
+    border-left: 3px solid var(--accent-h);
+    padding: 20px 28px;
+    margin: 24px 0;
+    border-radius: 0 4px 4px 0;
+    max-width: 72ch;
+  }
+  .beck .concept-box   { border-color: var(--accent-b); }
+  .cross .concept-box  { border-color: var(--accent-x); }
+  .concept-box .label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: .65rem;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    color: var(--accent-h);
+    margin-bottom: 8px;
+  }
+  .beck .concept-box .label   { color: var(--accent-b); }
+  .concept-box blockquote {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 1.08rem;
+    color: var(--text);
+    line-height: 1.55;
+    margin-bottom: 10px;
+  }
+  .concept-box p { font-size: .88rem; color: #a0a0a0; margin: 0; }
+
+  /* ── SVG Maps ───────────────────────────────────────── */
+  .map-wrap {
+    width: 100%;
+    max-width: 900px;
+    margin-top: 28px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 20px;
+    overflow-x: auto;
+  }
+  .map-wrap svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* chain diagram */
+  .chain {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0;
+    margin-top: 24px;
+  }
+  .chain-node {
+    background: var(--surface);
+    border: 1px solid var(--accent-h);
+    color: var(--text);
+    padding: 10px 18px;
+    border-radius: 4px;
+    font-size: .82rem;
+    font-family: 'IBM Plex Mono', monospace;
+    white-space: nowrap;
+  }
+  .chain-arrow {
+    font-size: 1.1rem;
+    color: var(--accent-h);
+    padding: 0 8px;
+  }
+
+  /* ── Two-column ─────────────────────────────────────── */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    margin-top: 24px;
+  }
+  @media (max-width: 720px) {
+    .two-col { grid-template-columns: 1fr; }
+  }
+
+  /* ── Table ──────────────────────────────────────────── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 22px;
+    font-size: .87rem;
+  }
+  th {
+    text-align: left;
+    padding: 10px 14px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: .68rem;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+  }
+  td {
+    padding: 11px 14px;
+    border-bottom: 1px solid var(--border);
+    color: #b8b4ac;
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+  td:first-child { color: var(--text); font-weight: 500; }
+
+  /* ── Slide number ───────────────────────────────────── */
+  .slide-num {
+    position: absolute;
+    bottom: 22px; right: 30px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: .62rem;
+    color: var(--border);
+    letter-spacing: .1em;
+  }
+
+  /* Fade-in on scroll */
+  .fade-in { opacity: 0; transform: translateY(20px); transition: opacity .7s ease, transform .7s ease; }
+  .fade-in.visible { opacity: 1; transform: none; }
+</style>
+</head>
+<body>
+
+<!-- Progress bar -->
+<div id="progress"></div>
+
+<!-- Nav dots (filled by JS) -->
+<nav id="nav"></nav>
+
+<!-- ══════════════════════════════════════════════════════
+     SLIDE 0 — COVER
+══════════════════════════════════════════════════════════ -->
+<section class="slide cover" data-idx="0">
+  <div class="cover-eyebrow">SOL316: Sociedad, Naturaleza y Tecnología</div>
+  <h1>
+    <span>Ayudantía</span>
+    <span class="num">Seminario&nbsp;2</span>
+  </h1>
+  <div class="cover-meta">
+    <span>presentador</span>
+    <strong>Vicente Mühlenbrock</strong>
+    <span style="margin-top:8px">autores</span>
+    <strong>N. Katherine Hayles &nbsp;·&nbsp; Ulrich Beck</strong>
+  </div>
+  <div class="cover-deco">S2</div>
+  <div class="slide-num">00</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     DIVIDER — HAYLES
+══════════════════════════════════════════════════════════ -->
+<section class="slide divider fade-in" data-idx="1">
+  <div>
+    <div class="author-note" style="color:var(--accent-h);letter-spacing:.18em;font-size:.7rem;margin-bottom:14px;font-family:'IBM Plex Mono',monospace;">PARTE I</div>
+    <h2 style="color:var(--accent-h)">N. Katherine Hayles</h2>
+    <p class="author-note" style="margin-top:6px"><em>Bacteria to AI</em>, Chapter 1: "An Integrated Cognitive Framework"</p>
+  </div>
+  <div class="slide-num">01</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     SLIDE — HAYLES: PREGUNTAS CENTRALES
+══════════════════════════════════════════════════════════ -->
+<section class="slide hayles fade-in" data-idx="2">
+  <div class="section-tag">Hayles · Preguntas centrales</div>
+  <h2>¿Qué cuestionamientos guían el argumento?</h2>
+  <div class="cards">
+    <div class="card">
+      <div class="card-num">01</div>
+      <h4>¿Es la cognición exclusivamente humana?</h4>
+      <p>¿Puede existir cognición sin conciencia? ¿Tienen capacidades cognitivas las bacterias, plantas y computadores?</p>
+    </div>
+    <div class="card">
+      <div class="card-num">02</div>
+      <h4>¿Qué implica el antropocentrismo?</h4>
+      <p>¿Por qué posicionar al humano como "la medida de todas las cosas" es un error conceptual y un riesgo planetario?</p>
+    </div>
+    <div class="card">
+      <div class="card-num">03</div>
+      <h4>¿Quién toma las decisiones hoy?</h4>
+      <p>En sociedades donde los ensamblajes cognitivos hacen la mayor parte del trabajo, ¿quién o qué decide realmente?</p>
+    </div>
+    <div class="card">
+      <div class="card-num">04</div>
+      <h4>¿Cómo coevolucionan vida y tecnología?</h4>
+      <p>¿Qué relación guardan la evolución biológica (de bacterias a humanos) y el desarrollo de la Inteligencia Artificial?</p>
+    </div>
+  </div>
+  <div class="slide-num">02</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     SLIDE — HAYLES: ARGUMENTOS PRINCIPALES
+══════════════════════════════════════════════════════════ -->
+<section class="slide hayles fade-in" data-idx="3">
+  <div class="section-tag">Hayles · Argumentos y propuestas</div>
+  <h2>Marco Cognitivo Integrado (ICF)</h2>
+  <p>Hayles propone desacoplar <em>cognición</em> de <em>conciencia</em>. La cognición —entendida como el proceso de interpretar información conectándola con significado— es una capacidad de <strong>todos los seres vivos</strong> y de los medios computacionales, no solo de los humanos conscientes.</p>
+
+  <div class="pill-list" style="margin-top:20px">
+    <span class="pill">Cognición sin conciencia</span>
+    <span class="pill">Ensamblajes cognitivos</span>
+    <span class="pill">Micro / Evo / Techno</span>
+    <span class="pill">Actores vs. Agentes</span>
+    <span class="pill">Mandato biológico</span>
+    <span class="pill">Semiosfera</span>
+  </div>
+
+  <div class="two-col" style="margin-top:30px">
+    <div>
+      <h3>Actores</h3>
+      <p>Organismos vivos y entidades con capacidad cognitiva. Interpretan información, crean significados, tienen <em>stakes</em> en lo que les ocurre.</p>
+    </div>
+    <div>
+      <h3>Agentes</h3>
+      <p>Procesos fisicoquímicos (tornados, avalanchas). Tienen poder causal pero no interpretan ni eligen basándose en significados.</p>
+    </div>
+  </div>
+  <div class="slide-num">03</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     SLIDE — HAYLES: UMWELT
+══════════════════════════════════════════════════════════ -->
+<section class="slide hayles fade-in" data-idx="4">
+  <div class="section-tag">Hayles · Concepto clave</div>
+  <h2>Umwelt: horizontes de mundo</h2>
+
+  <div class="concept-box">
+    <div class="label">Definición</div>
+    <blockquote>"All creatures have world horizons, or umwelten, specific for their species… these world horizons may overlap, but they never entirely coincide."</blockquote>
+    <p>— Hayles, <em>Bacteria to AI</em>, cap. 1</p>
+  </div>
+
+  <p style="margin-top:18px">Cada especie —y cada entidad cognitiva— percibe e interpreta su entorno a través de un horizonte particular. El conejo ve como conejo; el pulpo, como pulpo; el humano, como humano. Ningún <em>umwelt</em> es inherentemente superior.</p>
+  <p>El concepto, originario del biólogo Jakob von Uexküll, le sirve a Hayles para argumentar que la IA también desarrolla su propio horizonte de mundo: interpreta información en contextos que le son propios, sin reproducir exactamente el <em>umwelt</em> humano.</p>
+
+  <div class="pill-list" style="margin-top:16px">
+    <span class="pill">Pluralidad de mundos posibles</span>
+    <span class="pill">Anti-antropocentrismo ético</span>
+    <span class="pill">IA como nuevo umwelt</span>
+  </div>
+  <div class="slide-num">04</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     SLIDE — HAYLES: COEVOLUCIÓN
+══════════════════════════════════════════════════════════ -->
+<section class="slide hayles fade-in" data-idx="5">
+  <div class="section-tag">Hayles · Coevolución</div>
+  <h2>De bacterias a la Inteligencia Artificial</h2>
+  <p>Hayles traza una línea de coevolución donde la cognición surge en los organismos unicelulares, escala hasta los humanos y se extiende hoy a los medios computacionales.</p>
+
+  <div style="margin-top:24px;overflow-x:auto">
+    <div class="chain">
+      <div class="chain-node">Bacterias<br><span style="font-size:.65rem;color:var(--muted)">cognición unicelular</span></div>
+      <div class="chain-arrow">→</div>
+      <div class="chain-node">Plantas / Hongos<br><span style="font-size:.65rem;color:var(--muted)">sin SNC, pero cognitivas</span></div>
+      <div class="chain-arrow">→</div>
+      <div class="chain-node">Animales<br><span style="font-size:.65rem;color:var(--muted)">conciencia emerge</span></div>
+      <div class="chain-arrow">→</div>
+      <div class="chain-node">Homo sapiens<br><span style="font-size:.65rem;color:var(--muted)">símbolos abstractos</span></div>
+      <div class="chain-arrow">→</div>
+      <div class="chain-node">IA / LLMs<br><span style="font-size:.65rem;color:var(--muted)">cognición computacional</span></div>
+    </div>
+  </div>
+
+  <div class="two-col" style="margin-top:30px">
+    <div>
+      <h3>Primera gran inversión</h3>
+      <p>Los organismos van de la <em>inmersión ambiental</em> a la manipulación de símbolos abstractos. Los computadores recorren el camino inverso: nacen con símbolos y gradualmente se "sumergen" en entornos.</p>
+    </div>
+    <div>
+      <h3>Segunda gran inversión</h3>
+      <p>Los seres vivos parten del mandato de sobrevivir/reproducirse y llegan al diseño con propósito. La IA comienza con propósito asignado y podría, en el futuro, desarrollar algo análogo al mandato de supervivencia.</p>
+    </div>
+  </div>
+  <div class="slide-num">05</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     SLIDE — HAYLES: MAPA CONCEPTUAL
+══════════════════════════════════════════════════════════ -->
+<section class="slide hayles fade-in" data-idx="6">
+  <div class="section-tag">Hayles · Esquema conceptual</div>
+  <h2>Mapa de ideas</h2>
+
+  <div class="map-wrap">
+    <svg viewBox="0 0 860 500" xmlns="http://www.w3.org/2000/svg" font-family="'IBM Plex Mono', monospace">
+      <!-- lines -->
+      <!-- ICF to children -->
+      <line x1="430" y1="80" x2="150" y2="170" stroke="#c8a96e" stroke-width="1" stroke-dasharray="4,3" opacity=".5"/>
+      <line x1="430" y1="80" x2="430" y2="170" stroke="#c8a96e" stroke-width="1" stroke-dasharray="4,3" opacity=".5"/>
+      <line x1="430" y1="80" x2="710" y2="170" stroke="#c8a96e" stroke-width="1" stroke-dasharray="4,3" opacity=".5"/>
+      <!-- branches down -->
+      <line x1="150" y1="210" x2="80"  y2="300" stroke="#666" stroke-width="1" opacity=".4"/>
+      <line x1="150" y1="210" x2="220" y2="300" stroke="#666" stroke-width="1" opacity=".4"/>
+      <line x1="430" y1="210" x2="350" y2="300" stroke="#666" stroke-width="1" opacity=".4"/>
+      <line x1="430" y1="210" x2="510" y2="300" stroke="#666" stroke-width="1" opacity=".4"/>
+      <line x1="710" y1="210" x2="640" y2="300" stroke="#666" stroke-width="1" opacity=".4"/>
+      <line x1="710" y1="210" x2="780" y2="300" stroke="#666" stroke-width="1" opacity=".4"/>
+      <!-- bottom line -->
+      <line x1="350" y1="340" x2="350" y2="410" stroke="#666" stroke-width="1" opacity=".3"/>
+      <line x1="510" y1="340" x2="510" y2="410" stroke="#666" stroke-width="1" opacity=".3"/>
+      <line x1="80"  y1="340" x2="80"  y2="410" stroke="#666" stroke-width="1" opacity=".3"/>
+      <line x1="780" y1="340" x2="780" y2="410" stroke="#666" stroke-width="1" opacity=".3"/>
+
+      <!-- Central node: ICF -->
+      <rect x="310" y="34" width="240" height="46" rx="4" fill="#1e1a10" stroke="#c8a96e" stroke-width="1.5"/>
+      <text x="430" y="62" text-anchor="middle" fill="#c8a96e" font-size="12" font-weight="bold">Marco Cognitivo Integrado</text>
+
+      <!-- Level 1 nodes -->
+      <!-- Cognition -->
+      <rect x="70" y="170" width="160" height="40" rx="3" fill="#1a1a1a" stroke="#555" stroke-width="1"/>
+      <text x="150" y="195" text-anchor="middle" fill="#e8e4dc" font-size="10.5">Cognición ampliada</text>
+      <!-- Umwelt -->
+      <rect x="350" y="170" width="160" height="40" rx="3" fill="#1a1a1a" stroke="#555" stroke-width="1"/>
+      <text x="430" y="195" text-anchor="middle" fill="#e8e4dc" font-size="10.5">Umwelt / horizontes</text>
+      <!-- Ensamblajes -->
+      <rect x="630" y="170" width="160" height="40" rx="3" fill="#1a1a1a" stroke="#555" stroke-width="1"/>
+      <text x="710" y="195" text-anchor="middle" fill="#e8e4dc" font-size="10.5">Ensamblajes cognitivos</text>
+
+      <!-- Level 2 nodes -->
+      <rect x="30"  y="300" width="100" height="40" rx="3" fill="#161616" stroke="#444" stroke-width="1"/>
+      <text x="80"  y="316" text-anchor="middle" fill="#a0a0a0" font-size="9">No-consciente</text>
+      <text x="80"  y="330" text-anchor="middle" fill="#a0a0a0" font-size="9">/ plantas / IA</text>
+
+      <rect x="170" y="300" width="100" height="40" rx="3" fill="#161616" stroke="#444" stroke-width="1"/>
+      <text x="220" y="316" text-anchor="middle" fill="#a0a0a0" font-size="9">Mandato</text>
+      <text x="220" y="330" text-anchor="middle" fill="#a0a0a0" font-size="9">biológico</text>
+
+      <rect x="300" y="300" width="100" height="40" rx="3" fill="#161616" stroke="#444" stroke-width="1"/>
+      <text x="350" y="316" text-anchor="middle" fill="#a0a0a0" font-size="9">Pluralidad</text>
+      <text x="350" y="330" text-anchor="middle" fill="#a0a0a0" font-size="9">de mundos</text>
+
+      <rect x="460" y="300" width="100" height="40" rx="3" fill="#161616" stroke="#444" stroke-width="1"/>
+      <text x="510" y="316" text-anchor="middle" fill="#a0a0a0" font-size="9">Anti-</text>
+      <text x="510" y="330" text-anchor="middle" fill="#a0a0a0" font-size="9">antropocentrismo</text>
+
+      <rect x="590" y="300" width="100" height="40" rx="3" fill="#161616" stroke="#444" stroke-width="1"/>
+      <text x="640" y="316" text-anchor="middle" fill="#a0a0a0" font-size="9">Coevolución</text>
+      <text x="640" y="330" text-anchor="middle" fill="#a0a0a0" font-size="9">bio ↔ tech</text>
+
+      <rect x="730" y="300" width="100" height="40" rx="3" fill="#161616" stroke="#444" stroke-width="1"/>
+      <text x="780" y="316" text-anchor="middle" fill="#a0a0a0" font-size="9">Actores</text>
+      <text x="780" y="330" text-anchor="middle" fill="#a0a0a0" font-size="9">vs. Agentes</text>
+
+      <!-- Level 3 -->
+      <rect x="30"  y="410" width="100" height="36" rx="3" fill="#111" stroke="#333" stroke-width="1"/>
+      <text x="80"  y="428" text-anchor="middle" fill="#666" font-size="9">Semiosfera</text>
+      <text x="80"  y="440" text-anchor="middle" fill="#666" font-size="9">(Hoffmeyer)</text>
+
+      <rect x="300" y="410" width="100" height="36" rx="3" fill="#111" stroke="#333" stroke-width="1"/>
+      <text x="350" y="428" text-anchor="middle" fill="#666" font-size="9">Biosemiótica</text>
+      <text x="350" y="440" text-anchor="middle" fill="#666" font-size="9">(Peirce)</text>
+
+      <rect x="460" y="410" width="100" height="36" rx="3" fill="#111" stroke="#333" stroke-width="1"/>
+      <text x="510" y="428" text-anchor="middle" fill="#666" font-size="9">Riesgos IA</text>
+      <text x="510" y="440" text-anchor="middle" fill="#666" font-size="9">(Bostrom)</text>
+
+      <rect x="730" y="410" width="100" height="36" rx="3" fill="#111" stroke="#333" stroke-width="1"/>
+      <text x="780" y="428" text-anchor="middle" fill="#666" font-size="9">Rev. Cognitiva</text>
+      <text x="780" y="440" text-anchor="middle" fill="#666" font-size="9">→ IA</text>
+    </svg>
+  </div>
+  <div class="slide-num">06</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     DIVIDER — BECK
+══════════════════════════════════════════════════════════ -->
+<section class="slide divider beck-div fade-in" data-idx="7">
+  <div>
+    <div class="author-note" style="color:var(--accent-b);letter-spacing:.18em;font-size:.7rem;margin-bottom:14px;font-family:'IBM Plex Mono',monospace;">PARTE II</div>
+    <h2 style="color:var(--accent-b)">Ulrich Beck</h2>
+    <p class="author-note" style="margin-top:6px">"La política de la sociedad de riesgo" (1998)</p>
+  </div>
+  <div class="slide-num">07</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     SLIDE — BECK: PREGUNTAS CENTRALES
+══════════════════════════════════════════════════════════ -->
+<section class="slide beck fade-in" data-idx="8">
+  <div class="section-tag">Beck · Preguntas centrales</div>
+  <h2>¿Qué cuestionamientos guían el argumento?</h2>
+  <div class="cards">
+    <div class="card">
+      <div class="card-num">01</div>
+      <h4>¿Qué tipo de sociedad somos hoy?</h4>
+      <p>¿En qué se diferencia la "sociedad de riesgo" de la sociedad industrial clásica?</p>
+    </div>
+    <div class="card">
+      <div class="card-num">02</div>
+      <h4>¿De dónde vienen los riesgos modernos?</h4>
+      <p>¿Son producto del destino, la naturaleza… o de nuestras propias decisiones institucionales?</p>
+    </div>
+    <div class="card">
+      <div class="card-num">03</div>
+      <h4>¿Quién es responsable?</h4>
+      <p>En un mundo de riesgos globales difusos, ¿quién puede —y debe— rendir cuentas?</p>
+    </div>
+    <div class="card">
+      <div class="card-num">04</div>
+      <h4>¿Puede la ciencia ser árbitro del riesgo?</h4>
+      <p>¿Cuál es el papel de la política frente al monopolio técnico de la ciencia en la definición de lo que es seguro?</p>
+    </div>
+  </div>
+  <div class="slide-num">08</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     SLIDE — BECK: ARGUMENTOS + IRRESPONSABILIDAD
+══════════════════════════════════════════════════════════ -->
+<section class="slide beck fade-in" data-idx="9">
+  <div class="section-tag">Beck · Argumentos y propuestas</div>
+  <h2>Sociedad de riesgo y modernidad reflexiva</h2>
+  <p>Beck argumenta que la modernidad industrial generó una nueva clase de riesgos —globales, invisibles, incalculables— que las instituciones creadas para gestionarlos son incapaces de controlar, aunque sí los producen.</p>
+
+  <div class="concept-box" style="border-color:var(--accent-b);margin-top:22px">
+    <div class="label" style="color:var(--accent-b)">Concepto clave: Irresponsabilidad organizada</div>
+    <blockquote>"Las instituciones modernas deben reconocer la realidad de la catástrofe, negando al mismo tiempo su existencia, encubriendo sus orígenes y evitando la compensación o el control."</blockquote>
+    <p>Las burocracias, la industria y el Estado están estructuralmente diseñados para <em>no</em> rendir cuentas: los riesgos no son de "nadie".</p>
+  </div>
+
+  <div class="pill-list" style="margin-top:18px">
+    <span class="pill">Incertidumbre manufacturada</span>
+    <span class="pill">Relaciones de definición</span>
+    <span class="pill">Subpolítica</span>
+    <span class="pill">Modernidad reflexiva</span>
+    <span class="pill">Explosividad social del peligro</span>
+  </div>
+  <div class="slide-num">09</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     SLIDE — BECK: CIENCIA Y POLÍTICA
+══════════════════════════════════════════════════════════ -->
+<section class="slide beck fade-in" data-idx="10">
+  <div class="section-tag">Beck · Ciencia y política</div>
+  <h2>La mezcla de roles: ciencia, política e industria</h2>
+
+  <p>En la sociedad de riesgo, la separación clásica entre <em>investigación científica</em>, <em>decisión política</em> y <em>aplicación industrial</em> se disuelve. Beck identifica tres desplazamientos:</p>
+
+  <table style="margin-top:20px">
+    <thead>
+      <tr>
+        <th>Dimensión</th>
+        <th>Modernidad simple</th>
+        <th>Sociedad de riesgo</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Rol de la ciencia</td>
+        <td>Provee certezas, legitima decisiones</td>
+        <td>Produce incertidumbre reflexiva; los expertos se contradicen</td>
+      </tr>
+      <tr>
+        <td>Rol de la política</td>
+        <td>Decide basándose en consejo científico</td>
+        <td>Legitima decisiones que no tomó y desconoce; es responsabilizada por daños ajenos</td>
+      </tr>
+      <tr>
+        <td>Rol de la industria</td>
+        <td>Aplica tecnología bajo regulación pública</td>
+        <td>Autonomía en inversión y despliegue; define los riesgos que ella misma genera</td>
+      </tr>
+      <tr>
+        <td>Espacio de prueba</td>
+        <td>Laboratorio controlado → mercado</td>
+        <td>La sociedad entera es el laboratorio; los errores tienen consecuencias irreversibles</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p style="margin-top:18px">La <strong>subpolítica</strong> emerge cuando decisiones de inversión, desarrollo tecnológico y agenda científica operan fuera del sistema representativo tradicional, pero con consecuencias políticas masivas.</p>
+  <div class="slide-num">10</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     SLIDE — BECK: MAPA CONCEPTUAL
+══════════════════════════════════════════════════════════ -->
+<section class="slide beck fade-in" data-idx="11">
+  <div class="section-tag">Beck · Esquema conceptual</div>
+  <h2>Mapa de ideas</h2>
+
+  <div class="map-wrap" style="border-color:#1e2a36">
+    <svg viewBox="0 0 860 480" xmlns="http://www.w3.org/2000/svg" font-family="'IBM Plex Mono', monospace">
+      <!-- Central node -->
+      <line x1="430" y1="75" x2="160" y2="160" stroke="#6ea8c8" stroke-width="1" stroke-dasharray="4,3" opacity=".5"/>
+      <line x1="430" y1="75" x2="430" y2="160" stroke="#6ea8c8" stroke-width="1" stroke-dasharray="4,3" opacity=".5"/>
+      <line x1="430" y1="75" x2="700" y2="160" stroke="#6ea8c8" stroke-width="1" stroke-dasharray="4,3" opacity=".5"/>
+
+      <rect x="300" y="30" width="260" height="44" rx="4" fill="#0e1e2a" stroke="#6ea8c8" stroke-width="1.5"/>
+      <text x="430" y="57" text-anchor="middle" fill="#6ea8c8" font-size="12" font-weight="bold">Sociedad Mundial de Riesgo</text>
+
+      <!-- L1 -->
+      <line x1="160" y1="200" x2="80"  y2="290" stroke="#555" stroke-width="1" opacity=".4"/>
+      <line x1="160" y1="200" x2="240" y2="290" stroke="#555" stroke-width="1" opacity=".4"/>
+      <line x1="430" y1="200" x2="350" y2="290" stroke="#555" stroke-width="1" opacity=".4"/>
+      <line x1="430" y1="200" x2="510" y2="290" stroke="#555" stroke-width="1" opacity=".4"/>
+      <line x1="700" y1="200" x2="620" y2="290" stroke="#555" stroke-width="1" opacity=".4"/>
+      <line x1="700" y1="200" x2="780" y2="290" stroke="#555" stroke-width="1" opacity=".4"/>
+
+      <rect x="80"  y="160" width="160" height="40" rx="3" fill="#111e28" stroke="#445" stroke-width="1"/>
+      <text x="160" y="185" text-anchor="middle" fill="#c8d8e8" font-size="10.5">Fin de la naturaleza</text>
+
+      <rect x="350" y="160" width="160" height="40" rx="3" fill="#111e28" stroke="#445" stroke-width="1"/>
+      <text x="430" y="185" text-anchor="middle" fill="#c8d8e8" font-size="10.5">Irresponsabilidad org.</text>
+
+      <rect x="620" y="160" width="160" height="40" rx="3" fill="#111e28" stroke="#445" stroke-width="1"/>
+      <text x="700" y="185" text-anchor="middle" fill="#c8d8e8" font-size="10.5">Relaciones de definición</text>
+
+      <!-- L2 -->
+      <rect x="30"  y="290" width="100" height="40" rx="3" fill="#0e1818" stroke="#333" stroke-width="1"/>
+      <text x="80"  y="306" text-anchor="middle" fill="#888" font-size="9">Fin de la</text>
+      <text x="80"  y="320" text-anchor="middle" fill="#888" font-size="9">tradición</text>
+
+      <rect x="190" y="290" width="100" height="40" rx="3" fill="#0e1818" stroke="#333" stroke-width="1"/>
+      <text x="240" y="306" text-anchor="middle" fill="#888" font-size="9">Incertidumbre</text>
+      <text x="240" y="320" text-anchor="middle" fill="#888" font-size="9">manufacturada</text>
+
+      <rect x="300" y="290" width="100" height="40" rx="3" fill="#0e1818" stroke="#333" stroke-width="1"/>
+      <text x="350" y="306" text-anchor="middle" fill="#888" font-size="9">Subpolítica</text>
+      <text x="350" y="320" text-anchor="middle" fill="#888" font-size="9">(industria)</text>
+
+      <rect x="460" y="290" width="100" height="40" rx="3" fill="#0e1818" stroke="#333" stroke-width="1"/>
+      <text x="510" y="306" text-anchor="middle" fill="#888" font-size="9">Ciencia como</text>
+      <text x="510" y="320" text-anchor="middle" fill="#888" font-size="9">reflexividad</text>
+
+      <rect x="570" y="290" width="100" height="40" rx="3" fill="#0e1818" stroke="#333" stroke-width="1"/>
+      <text x="620" y="306" text-anchor="middle" fill="#888" font-size="9">¿Quién decide</text>
+      <text x="620" y="320" text-anchor="middle" fill="#888" font-size="9">el riesgo?</text>
+
+      <rect x="730" y="290" width="100" height="40" rx="3" fill="#0e1818" stroke="#333" stroke-width="1"/>
+      <text x="780" y="306" text-anchor="middle" fill="#888" font-size="9">Explosividad</text>
+      <text x="780" y="320" text-anchor="middle" fill="#888" font-size="9">social</text>
+
+      <!-- L3 outcomes -->
+      <line x1="80"  y1="330" x2="80"  y2="400" stroke="#333" stroke-width="1" opacity=".4"/>
+      <line x1="510" y1="330" x2="430" y2="400" stroke="#333" stroke-width="1" opacity=".4"/>
+      <line x1="780" y1="330" x2="700" y2="400" stroke="#333" stroke-width="1" opacity=".4"/>
+
+      <rect x="30"  y="400" width="100" height="36" rx="3" fill="#0a1010" stroke="#222" stroke-width="1"/>
+      <text x="80"  y="418" text-anchor="middle" fill="#555" font-size="9">Riesgo como</text>
+      <text x="80"  y="430" text-anchor="middle" fill="#555" font-size="9">realidad virtual</text>
+
+      <rect x="380" y="400" width="100" height="36" rx="3" fill="#0a1010" stroke="#222" stroke-width="1"/>
+      <text x="430" y="418" text-anchor="middle" fill="#555" font-size="9">Democracia</text>
+      <text x="430" y="430" text-anchor="middle" fill="#555" font-size="9">ecológica</text>
+
+      <rect x="650" y="400" width="100" height="36" rx="3" fill="#0a1010" stroke="#222" stroke-width="1"/>
+      <text x="700" y="418" text-anchor="middle" fill="#555" font-size="9">Modernidad</text>
+      <text x="700" y="430" text-anchor="middle" fill="#555" font-size="9">reflexiva</text>
+    </svg>
+  </div>
+  <div class="slide-num">11</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     DIVIDER — CRUCES
+══════════════════════════════════════════════════════════ -->
+<section class="slide divider cross-div fade-in" data-idx="12">
+  <div>
+    <div class="author-note" style="color:var(--accent-x);letter-spacing:.18em;font-size:.7rem;margin-bottom:14px;font-family:'IBM Plex Mono',monospace;">PARTE III</div>
+    <h2 style="color:var(--accent-x)">Cruces y tensiones</h2>
+    <p class="author-note" style="margin-top:6px">Hayles · Beck — diálogo, solapamientos y choques</p>
+  </div>
+  <div class="slide-num">12</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     SLIDE — CRUCES: TABLA
+══════════════════════════════════════════════════════════ -->
+<section class="slide cross fade-in" data-idx="13">
+  <div class="section-tag">Cruces · Tabla comparativa</div>
+  <h2>Hayles y Beck frente a frente</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Dimensión</th>
+        <th style="color:var(--accent-h)">Hayles</th>
+        <th style="color:var(--accent-b)">Beck</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Punto de partida</td>
+        <td>Cognición como propiedad universal de lo vivo y lo computacional</td>
+        <td>Riesgo como producto social de la modernización industrial</td>
+      </tr>
+      <tr>
+        <td>Sujeto de análisis</td>
+        <td>Ensamblajes cognitivos: humanos + IA + no-humanos</td>
+        <td>Instituciones, expertos, industria y ciudadanos en la política del riesgo</td>
+      </tr>
+      <tr>
+        <td>Relación con la tecnología</td>
+        <td>Coevolución simbiótica necesaria; IA como extensión cognitiva</td>
+        <td>La tecnología produce riesgos que sus propios creadores no pueden controlar</td>
+      </tr>
+      <tr>
+        <td>Responsabilidad</td>
+        <td>Distribuida entre todos los actores del ensamblaje; humildad ante lo no-humano</td>
+        <td>Sistémicamente evadida (irresponsabilidad organizada)</td>
+      </tr>
+      <tr>
+        <td>Lugar de la ciencia</td>
+        <td>La ciencia (biosemiótica, neurociencia) expande el umbral de lo cognitivo</td>
+        <td>La ciencia reflexiva produce incertidumbre, pierde el monopolio de la verdad</td>
+      </tr>
+      <tr>
+        <td>Horizonte político</td>
+        <td>Adoptar el ICF para decisiones más responsables ante la IA</td>
+        <td>Democracia técnica/ecológica; politizar decisiones hoy despolitizadas</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="slide-num">13</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     SLIDE — CRUCES: MAPA
+══════════════════════════════════════════════════════════ -->
+<section class="slide cross fade-in" data-idx="14">
+  <div class="section-tag">Cruces · Mapa conceptual</div>
+  <h2>Diálogos, solapamientos y choques</h2>
+
+  <div class="map-wrap" style="border-color:#2a1a3a">
+    <svg viewBox="0 0 860 520" xmlns="http://www.w3.org/2000/svg" font-family="'IBM Plex Mono', monospace">
+
+      <!-- Hayles node left -->
+      <ellipse cx="210" cy="110" rx="140" ry="50" fill="#1e1a10" stroke="#c8a96e" stroke-width="1.5" opacity=".9"/>
+      <text x="210" y="106" text-anchor="middle" fill="#c8a96e" font-size="11" font-weight="bold">HAYLES</text>
+      <text x="210" y="122" text-anchor="middle" fill="#a08040" font-size="9">ICF · Ensamblajes cognitivos</text>
+
+      <!-- Beck node right -->
+      <ellipse cx="650" cy="110" rx="140" ry="50" fill="#0e1e2a" stroke="#6ea8c8" stroke-width="1.5" opacity=".9"/>
+      <text x="650" y="106" text-anchor="middle" fill="#6ea8c8" font-size="11" font-weight="bold">BECK</text>
+      <text x="650" y="122" text-anchor="middle" fill="#4a88a8" font-size="9">Sociedad de riesgo</text>
+
+      <!-- Center overlap node -->
+      <ellipse cx="430" cy="220" rx="120" ry="44" fill="#1a0f28" stroke="#b06ec8" stroke-width="1.5"/>
+      <text x="430" y="215" text-anchor="middle" fill="#b06ec8" font-size="11">SOLAPAMIENTOS</text>
+      <text x="430" y="230" text-anchor="middle" fill="#8050a0" font-size="9">Distribución · No-control · Riesgo</text>
+
+      <!-- Lines to center -->
+      <line x1="310" y1="130" x2="360" y2="195" stroke="#c8a96e" stroke-width="1" stroke-dasharray="5,3" opacity=".5"/>
+      <line x1="550" y1="130" x2="500" y2="195" stroke="#6ea8c8" stroke-width="1" stroke-dasharray="5,3" opacity=".5"/>
+
+      <!-- Overlap content -->
+      <rect x="330" y="275" width="200" height="36" rx="3" fill="#150f22" stroke="#6a3a88" stroke-width="1"/>
+      <text x="430" y="293" text-anchor="middle" fill="#a08abf" font-size="9">Agencia distribuida / nadie controla</text>
+      <text x="430" y="305" text-anchor="middle" fill="#a08abf" font-size="9">plenamente el sistema</text>
+      <line x1="430" y1="264" x2="430" y2="275" stroke="#6a3a88" stroke-width="1" opacity=".5"/>
+
+      <rect x="330" y="322" width="200" height="36" rx="3" fill="#150f22" stroke="#6a3a88" stroke-width="1"/>
+      <text x="430" y="340" text-anchor="middle" fill="#a08abf" font-size="9">Modernidad reflexiva: riesgo</text>
+      <text x="430" y="352" text-anchor="middle" fill="#a08abf" font-size="9">como producto de la racionalidad</text>
+
+      <!-- Hayles exclusive -->
+      <rect x="30" y="210" width="170" height="38" rx="3" fill="#1a1a10" stroke="#c8a96e" stroke-width="1" opacity=".7"/>
+      <text x="115" y="228" text-anchor="middle" fill="#c8a96e" font-size="9">Cognición no-humana</text>
+      <text x="115" y="242" text-anchor="middle" fill="#c8a96e" font-size="9">como valor ético</text>
+      <line x1="210" y1="160" x2="160" y2="210" stroke="#c8a96e" stroke-width="1" opacity=".4"/>
+
+      <rect x="30" y="260" width="170" height="38" rx="3" fill="#1a1a10" stroke="#c8a96e" stroke-width="1" opacity=".6"/>
+      <text x="115" y="278" text-anchor="middle" fill="#c8a96e" font-size="9">Umwelt / pluralidad</text>
+      <text x="115" y="292" text-anchor="middle" fill="#c8a96e" font-size="9">de horizontes cognitivos</text>
+      <line x1="160" y1="248" x2="160" y2="260" stroke="#c8a96e" stroke-width="1" opacity=".4"/>
+
+      <rect x="30" y="310" width="170" height="38" rx="3" fill="#1a1a10" stroke="#c8a96e" stroke-width="1" opacity=".5"/>
+      <text x="115" y="328" text-anchor="middle" fill="#c8a96e" font-size="9">Coevolución</text>
+      <text x="115" y="342" text-anchor="middle" fill="#c8a96e" font-size="9">bio ↔ computacional</text>
+      <line x1="160" y1="298" x2="160" y2="310" stroke="#c8a96e" stroke-width="1" opacity=".4"/>
+
+      <!-- Beck exclusive -->
+      <rect x="660" y="210" width="170" height="38" rx="3" fill="#0e1e28" stroke="#6ea8c8" stroke-width="1" opacity=".7"/>
+      <text x="745" y="228" text-anchor="middle" fill="#6ea8c8" font-size="9">Irresponsabilidad</text>
+      <text x="745" y="242" text-anchor="middle" fill="#6ea8c8" font-size="9">organizada</text>
+      <line x1="650" y1="160" x2="700" y2="210" stroke="#6ea8c8" stroke-width="1" opacity=".4"/>
+
+      <rect x="660" y="260" width="170" height="38" rx="3" fill="#0e1e28" stroke="#6ea8c8" stroke-width="1" opacity=".6"/>
+      <text x="745" y="278" text-anchor="middle" fill="#6ea8c8" font-size="9">Subpolítica /</text>
+      <text x="745" y="292" text-anchor="middle" fill="#6ea8c8" font-size="9">relaciones de definición</text>
+      <line x1="700" y1="248" x2="700" y2="260" stroke="#6ea8c8" stroke-width="1" opacity=".4"/>
+
+      <rect x="660" y="310" width="170" height="38" rx="3" fill="#0e1e28" stroke="#6ea8c8" stroke-width="1" opacity=".5"/>
+      <text x="745" y="328" text-anchor="middle" fill="#6ea8c8" font-size="9">Democracia</text>
+      <text x="745" y="342" text-anchor="middle" fill="#6ea8c8" font-size="9">ecológica / técnica</text>
+      <line x1="700" y1="298" x2="700" y2="310" stroke="#6ea8c8" stroke-width="1" opacity=".4"/>
+
+      <!-- TENSION label -->
+      <rect x="290" y="400" width="280" height="50" rx="4" fill="#1a0a0a" stroke="#c86e6e" stroke-width="1.5"/>
+      <text x="430" y="421" text-anchor="middle" fill="#c86e6e" font-size="10.5" font-weight="bold">TENSIÓN PRINCIPAL</text>
+      <text x="430" y="438" text-anchor="middle" fill="#a04040" font-size="9">Hayles: tecnología como oportunidad cognitiva</text>
+      <text x="430" y="450" text-anchor="middle" fill="#a04040" font-size="9">Beck: tecnología como fuente de riesgo no controlado</text>
+      <line x1="430" y1="368" x2="430" y2="400" stroke="#c86e6e" stroke-width="1" stroke-dasharray="3,3" opacity=".5"/>
+    </svg>
+  </div>
+  <div class="slide-num">14</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     SLIDE — CIERRE
+══════════════════════════════════════════════════════════ -->
+<section class="slide cross fade-in" data-idx="15">
+  <div class="section-tag">Síntesis</div>
+  <h2>¿Qué queda al final del diálogo?</h2>
+
+  <div class="two-col">
+    <div>
+      <h3 style="color:var(--accent-h)">Hayles nos dice:</h3>
+      <p>La tecnología —especialmente la IA— es parte de una cadena evolutiva cognitiva que nos obliga a abandonar el antropocentrismo. Las decisiones no son solo humanas: son de <em>ensamblajes</em>. Necesitamos humildad y responsabilidad distribuida.</p>
+    </div>
+    <div>
+      <h3 style="color:var(--accent-b)">Beck nos dice:</h3>
+      <p>Esa misma tecnología genera riesgos que las instituciones modernas son incapaces de asumir. La <em>irresponsabilidad organizada</em> es el nombre político de lo que ocurre cuando nadie responde por las consecuencias de sistemas que nadie controla del todo.</p>
+    </div>
+  </div>
+
+  <div class="concept-box" style="border-color:var(--accent-x);margin-top:30px;max-width:80ch">
+    <div class="label" style="color:var(--accent-x)">Pregunta para el seminario</div>
+    <blockquote>Si la IA es un actor dentro de ensamblajes cognitivos (Hayles), ¿quién ocupa el lugar del responsable cuando ese ensamblaje produce daños que nadie ordenó, nadie previó y nadie puede revertir (Beck)?</blockquote>
+  </div>
+  <div class="slide-num">15</div>
+</section>
+
+<script>
+  const slides = document.querySelectorAll('.slide[data-idx]');
+  const nav = document.getElementById('nav');
+  const progress = document.getElementById('progress');
+
+  // Build nav dots
+  slides.forEach((s, i) => {
+    const btn = document.createElement('button');
+    btn.title = `Diapositiva ${i+1}`;
+    btn.addEventListener('click', () => s.scrollIntoView({behavior:'smooth'}));
+    nav.appendChild(btn);
+  });
+
+  const dots = nav.querySelectorAll('button');
+
+  // Accent colors per section
+  const accentMap = {hayles:'#c8a96e', beck:'#6ea8c8', cross:'#b06ec8', cover:'#e8e4dc', divider:'#e8e4dc'};
+
+  function updateActive() {
+    let current = 0;
+    const scrollY = window.scrollY + window.innerHeight * 0.35;
+    slides.forEach((s, i) => {
+      if (s.offsetTop <= scrollY) current = i;
+    });
+
+    dots.forEach((d, i) => d.classList.toggle('active', i === current));
+
+    // progress
+    const total = document.body.scrollHeight - window.innerHeight;
+    const pct = total > 0 ? (window.scrollY / total) * 100 : 0;
+    progress.style.width = pct + '%';
+
+    // accent color
+    const cls = slides[current].classList;
+    if (cls.contains('hayles')) progress.style.background = accentMap.hayles;
+    else if (cls.contains('beck')) progress.style.background = accentMap.beck;
+    else if (cls.contains('cross')) progress.style.background = accentMap.cross;
+    else progress.style.background = accentMap.cover;
+
+    // fade-in
+    slides.forEach(s => {
+      if (s.classList.contains('fade-in')) {
+        const rect = s.getBoundingClientRect();
+        if (rect.top < window.innerHeight * 0.88) s.classList.add('visible');
+      }
+    });
+  }
+
+  window.addEventListener('scroll', updateActive, {passive:true});
+  updateActive();
+
+  // Keyboard navigation
+  window.addEventListener('keydown', e => {
+    const cur = [...slides].findIndex(s => s.classList.contains && s.getBoundingClientRect().top > -100 && s.getBoundingClientRect().top < window.innerHeight);
+    if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+      const active = [...dots].findIndex(d => d.classList.contains('active'));
+      if (active < slides.length - 1) slides[active+1].scrollIntoView({behavior:'smooth'});
+    }
+    if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+      const active = [...dots].findIndex(d => d.classList.contains('active'));
+      if (active > 0) slides[active-1].scrollIntoView({behavior:'smooth'});
+    }
+  });
+</script>
+</body>
+</html>
