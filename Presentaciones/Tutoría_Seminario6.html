@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tutoría Seminario 6 · Bennett &amp; Rose</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=Spectral:ital,wght@0,300..700;1,300..700&family=JetBrains+Mono:wght@400..600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --paper: #efe7d6;
+  --paper-2: #e6dcc4;
+  --ink: #1a1c1f;
+  --ink-soft: #5a544a;
+  --ink-faint: rgba(26, 28, 31, 0.45);
+
+  --bennett: #a14820;
+  --bennett-deep: #6e2f15;
+  --bennett-tint: rgba(161, 72, 32, 0.10);
+  --bennett-line: rgba(161, 72, 32, 0.35);
+
+  --rose: #1d4a5a;
+  --rose-deep: #102e3a;
+  --rose-tint: rgba(29, 74, 90, 0.10);
+  --rose-line: rgba(29, 74, 90, 0.35);
+
+  --hairline: rgba(26, 28, 31, 0.15);
+
+  --serif: 'Spectral', Georgia, serif;
+  --display: 'Fraunces', Georgia, serif;
+  --mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--serif);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  pointer-events: none; z-index: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 0% 0%, rgba(0,0,0,0.05), transparent 60%),
+    radial-gradient(ellipse 70% 60% at 100% 100%, rgba(0,0,0,0.04), transparent 60%);
+}
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  pointer-events: none; z-index: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.08 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode: multiply;
+  opacity: 0.5;
+}
+
+.deck {
+  position: relative;
+  height: 100vh; width: 100vw;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.slide {
+  position: absolute; inset: 0;
+  padding: 5vh 5.5vw 7vh;
+  display: flex; flex-direction: column;
+  opacity: 0;
+  transform: translateY(8px);
+  pointer-events: none;
+  transition: opacity 0.45s ease, transform 0.45s ease;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0,0,0,0.2) transparent;
+}
+.slide::-webkit-scrollbar { width: 6px; }
+.slide::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 3px; }
+.slide.active {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* ────── Meta bar ────── */
+.meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  border-bottom: 1px solid var(--hairline);
+  padding-bottom: 0.7rem;
+  margin-bottom: 1.4rem;
+  flex-shrink: 0;
+}
+.meta .dot { display:inline-block; width:.5em; height:.5em; border-radius:50%; vertical-align: middle; margin-right:.5em; }
+.meta .dot.bennett { background: var(--bennett); }
+.meta .dot.rose { background: var(--rose); }
+.meta .author-tag.bennett { color: var(--bennett); }
+.meta .author-tag.rose { color: var(--rose); }
+
+/* ────── Slide titles ────── */
+.slide-title {
+  font-family: var(--display);
+  font-size: clamp(1.9rem, 3.4vw, 2.9rem);
+  font-weight: 400;
+  line-height: 1.02;
+  letter-spacing: -0.018em;
+  margin-bottom: 0.6rem;
+  font-variation-settings: "opsz" 144, "SOFT" 30, "WONK" 0;
+}
+.slide-title.bennett { color: var(--bennett); }
+.slide-title.rose { color: var(--rose); }
+.slide-title em { font-style: italic; }
+
+.slide-subtitle {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 0.95rem;
+  color: var(--ink-soft);
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--hairline);
+  padding-bottom: 1rem;
+  flex-shrink: 0;
+}
+
+/* ────── Content grid ────── */
+.content-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.4rem 2.6rem;
+  flex: 1;
+  align-content: start;
+}
+
+.section { display: flex; flex-direction: column; }
+.section + .section { margin-top: 0; }
+.section.span-2 { grid-column: 1 / -1; }
+
+.section h3 {
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  border-left: 3px solid var(--bennett);
+  padding-left: 0.65rem;
+  margin-bottom: 0.65rem;
+  line-height: 1.3;
+}
+.rose-zone .section h3 { border-left-color: var(--rose); }
+
+.section p, .section li {
+  font-family: var(--serif);
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: var(--ink);
+}
+.section p + p { margin-top: 0.45rem; }
+.section ul { list-style: none; padding: 0; }
+.section li {
+  padding-left: 0.95rem;
+  position: relative;
+  margin-bottom: 0.4rem;
+}
+.section li::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0.7em;
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: var(--bennett);
+}
+.rose-zone .section li::before { background: var(--rose); }
+
+.section strong {
+  font-weight: 600;
+  color: var(--bennett);
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.04em;
+  font-size: 1.05em;
+}
+.rose-zone .section strong {
+  color: var(--rose);
+}
+.section em { font-style: italic; }
+
+.section .lead {
+  font-family: var(--display);
+  font-size: 1.02rem;
+  font-style: italic;
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--ink);
+  margin-bottom: 0.4rem;
+}
+
+.pull-quote {
+  font-family: var(--display);
+  font-style: italic;
+  font-size: 1rem;
+  line-height: 1.45;
+  padding: 0.7rem 0 0.7rem 1rem;
+  border-left: 2px solid var(--bennett);
+  color: var(--ink);
+  margin: 0.3rem 0;
+}
+.rose-zone .pull-quote { border-left-color: var(--rose); }
+
+/* ────── Slide 1: Portada ────── */
+.s-portada {
+  padding: 7vh 7vw;
+  justify-content: space-between;
+}
+.s-portada .top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.s-portada .top-bar .seal {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.s-portada .top-bar .seal::before {
+  content: '';
+  display: inline-block;
+  width: 10px; height: 10px;
+  border: 1.5px solid var(--ink);
+  transform: rotate(45deg);
+}
+
+.s-portada .title-block { margin: auto 0; max-width: 100%; }
+.s-portada .kicker {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 1.4rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+.s-portada .kicker::after {
+  content: '';
+  display: inline-block;
+  width: 80px; height: 1px;
+  background: var(--ink-soft);
+}
+.s-portada h1 {
+  font-family: var(--display);
+  font-size: clamp(2.6rem, 7.5vw, 7rem);
+  font-weight: 300;
+  line-height: 0.98;
+  letter-spacing: -0.025em;
+  font-variation-settings: "opsz" 144, "SOFT" 50, "WONK" 1;
+}
+.s-portada h1 .row { display: block; }
+.s-portada h1 em.bennett-name {
+  font-style: italic;
+  color: var(--bennett);
+  font-weight: 400;
+}
+.s-portada h1 em.rose-name {
+  font-style: italic;
+  color: var(--rose);
+  font-weight: 400;
+}
+.s-portada h1 .amp {
+  font-family: var(--display);
+  font-style: italic;
+  font-weight: 300;
+  color: var(--ink-soft);
+  font-size: 0.85em;
+}
+.s-portada h1 .year {
+  font-family: var(--mono);
+  font-size: 0.32em;
+  font-weight: 400;
+  font-style: normal;
+  vertical-align: super;
+  letter-spacing: 0.06em;
+  color: var(--ink-soft);
+  margin-left: 0.15em;
+}
+
+.s-portada .bottom {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 2rem;
+  align-items: end;
+  padding-top: 2rem;
+  border-top: 1px solid var(--hairline);
+}
+.s-portada .bottom .label {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 0.4rem;
+}
+.s-portada .bottom .name {
+  font-family: var(--display);
+  font-style: italic;
+  font-size: 1.45rem;
+  font-weight: 400;
+  color: var(--ink);
+  letter-spacing: -0.005em;
+}
+.s-portada .bottom .right {
+  text-align: right;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.s-portada .ornament {
+  display: flex; align-items: center;
+  color: var(--ink-soft);
+}
+.s-portada .ornament svg { width: 60px; height: 60px; }
+
+/* ────── Slide 5: Mapa conceptual ────── */
+.map-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.map-svg {
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+}
+.map-caption {
+  font-family: var(--display);
+  font-style: italic;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  color: var(--ink-soft);
+  border-top: 1px solid var(--hairline);
+  padding-top: 0.9rem;
+  margin-top: 0.6rem;
+  flex-shrink: 0;
+  text-align: center;
+  max-width: 80%;
+  align-self: center;
+}
+
+/* ────── Slide 6: References ────── */
+.ref-intro {
+  font-family: var(--display);
+  font-style: italic;
+  font-size: 1rem;
+  color: var(--ink-soft);
+  margin-bottom: 2rem;
+  border-bottom: 1px solid var(--hairline);
+  padding-bottom: 1rem;
+}
+.ref-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+  font-family: var(--serif);
+  font-size: 1.05rem;
+  line-height: 1.6;
+}
+.ref-item {
+  padding-left: 2rem;
+  text-indent: -2rem;
+  position: relative;
+}
+.ref-item .num {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  color: var(--ink-faint);
+  display: block;
+  margin-bottom: 0.3rem;
+  text-indent: 0;
+  margin-left: 2rem;
+}
+.ref-item em { font-style: italic; }
+.ref-item.bennett { border-left: 2px solid var(--bennett); padding-left: 1.2rem; text-indent: 0; }
+.ref-item.rose { border-left: 2px solid var(--rose); padding-left: 1.2rem; text-indent: 0; }
+.ref-item .author {
+  font-weight: 600;
+}
+
+/* ────── Navigation ────── */
+.nav {
+  position: fixed;
+  bottom: 1.2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(239, 231, 214, 0.88);
+  backdrop-filter: blur(10px) saturate(120%);
+  -webkit-backdrop-filter: blur(10px) saturate(120%);
+  border: 1px solid rgba(26, 28, 31, 0.12);
+  border-radius: 999px;
+  padding: 0.35rem 0.5rem;
+  z-index: 100;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+.nav button {
+  background: none; border: none;
+  font-family: var(--display);
+  font-size: 1.1rem;
+  width: 2rem; height: 2rem;
+  border-radius: 50%;
+  cursor: pointer;
+  color: var(--ink);
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.18s, transform 0.18s;
+}
+.nav button:hover:not(:disabled) {
+  background: rgba(26, 28, 31, 0.06);
+}
+.nav button:active:not(:disabled) { transform: scale(0.92); }
+.nav button:disabled { opacity: 0.25; cursor: not-allowed; }
+.counter {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  color: var(--ink-soft);
+  min-width: 3.5rem;
+  text-align: center;
+  user-select: none;
+}
+.dots {
+  display: flex; gap: 0.3rem;
+  margin: 0 0.4rem;
+}
+.dots .d {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: rgba(26, 28, 31, 0.2);
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+.dots .d.on {
+  background: var(--ink);
+  transform: scale(1.3);
+}
+
+/* Hint */
+.hint {
+  position: fixed;
+  bottom: 1.4rem;
+  right: 1.4rem;
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  z-index: 100;
+  user-select: none;
+}
+
+@media (max-width: 980px) {
+  .content-grid { grid-template-columns: 1fr; gap: 1rem; }
+  .slide { padding: 4vh 5vw 7vh; }
+  .s-portada { padding: 6vh 6vw 8vh; }
+  .hint { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="deck" id="deck">
+
+  <!-- ============================================================ -->
+  <!-- Slide 1: Portada                                              -->
+  <!-- ============================================================ -->
+  <section class="slide s-portada active" data-slide="1">
+    <div class="top-bar">
+      <span class="seal">SOL316 · Sociedad, Naturaleza y Tecnología</span>
+      <span>Mayo · 2026</span>
+    </div>
+
+    <div class="title-block">
+      <div class="kicker">Tutoría · Seminario 6</div>
+      <h1>
+        <span class="row"><em class="bennett-name">Bennett</em><span class="year">2022</span></span>
+        <span class="row"><span class="amp">&amp;</span> <em class="rose-name">Rose</em><span class="year">2012</span></span>
+      </h1>
+    </div>
+
+    <div class="bottom">
+      <div class="left">
+        <div class="label">Presentado por</div>
+        <div class="name">Vicente Mühlenbrock</div>
+      </div>
+      <div class="ornament" aria-hidden="true">
+        <svg viewBox="0 0 60 60" fill="none" stroke="currentColor" stroke-width="0.8">
+          <circle cx="30" cy="30" r="20"/>
+          <circle cx="30" cy="30" r="12"/>
+          <line x1="10" y1="30" x2="50" y2="30"/>
+          <line x1="30" y1="10" x2="30" y2="50"/>
+          <circle cx="30" cy="30" r="2" fill="currentColor"/>
+        </svg>
+      </div>
+      <div class="right">
+        Materialismo vital<br>
+        Biopolítica molecular
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- Slide 2: Bennett                                              -->
+  <!-- ============================================================ -->
+  <section class="slide" data-slide="2">
+    <div class="meta">
+      <span><span class="dot bennett"></span><span class="author-tag bennett">Bennett (2022)</span> · La fuerza de las cosas</span>
+      <span>02 / 06</span>
+    </div>
+
+    <h2 class="slide-title bennett">La fuerza de las <em>cosas</em></h2>
+    <div class="slide-subtitle">Materialismo vital: dar voz al <em>poder-cosa</em> y reconocer la materia como activa, no como soporte inerte.</div>
+
+    <div class="content-grid">
+
+      <div class="section">
+        <h3>Principales interrogantes</h3>
+        <ul>
+          <li>¿Cómo dar voz a la <strong>fuerza activa</strong> de los materiales no humanos, más allá de los marcos centrados en el sujeto?</li>
+          <li>¿Qué sucede cuando las cosas dejan de ser telón de fondo y aparecen como <em>agentes</em> que afectan otros cuerpos?</li>
+          <li>¿Es posible una <strong>sensibilidad ecológica</strong> que reconozca la materia como vibrante y a sí mismo como parte de esa red?</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3>Concepto · Poder-cosa</h3>
+        <p class="lead">«Capacidad activa, terrenal y no-exactamente-humana que poseen los cuerpos materiales de afectar a otros cuerpos, potenciando o debilitando su poder».</p>
+        <p>Apunta al <em>ello</em> en cuanto actante: el momento de independencia que las cosas conservan respecto de la subjetividad. Bennett distingue los <strong>objetos</strong> (cómo las cosas aparecen ante un sujeto) de las <strong>cosas</strong> (cuando el ídolo mudo habla). Es un desplazamiento de la epistemología a la <em>ontología</em>.</p>
+      </div>
+
+      <div class="section">
+        <h3>Diálogos teóricos</h3>
+        <ul>
+          <li><strong>Spinoza</strong> · <em>conatus</em>: todo cuerpo se esfuerza por perseverar; todas las cosas están animadas en diversos grados.</li>
+          <li><strong>Thoreau</strong> · «lo Salvaje»: dimensión irreductiblemente extraña de la materia, un <em>a-fuera</em>.</li>
+          <li><strong>Merleau-Ponty</strong> · sentido inmanente del cuerpo vivo que se extiende a todo el mundo sensible.</li>
+          <li><strong>Vernadsky</strong> · continuidad vida–materia; los organismos como formas del mineral común que es el agua.</li>
+          <li><strong>de Vries</strong> · cualidad de <em>ab-soluto</em>: lo que se libera de los contextos existentes.</li>
+          <li><strong>Latour</strong> · <em>actante</em>: fuente de acción ni objeto ni sujeto, interviniente en un ensamblaje.</li>
+          <li><strong>De Landa</strong> · materia inorgánica autoorganizándose: ondas coherentes, atractores, estructuras emergentes.</li>
+          <li><strong>Adorno</strong> · <em>no-identidad</em> y dialéctica negativa: la cosa siempre excede al concepto.</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3>Materialismo vital</h3>
+        <p>Da voz a una <em>vitalidad inherente</em> a la materialidad y absuelve a la materia de sus asociaciones con el mecanicismo. Es resueltamente <strong>no teísta</strong>: el a-fuera no promete redención, es pura inmanencia.</p>
+        <p>Su horizonte ético-político: cultivar la <strong>atención al poder-cosa</strong> abre una sensibilidad ecológica capaz de reconocer que dañar un tramo de la red, en un mundo de materia vibrante, es dañarse a uno mismo.</p>
+
+        <h3 style="margin-top: 1.1rem;">El humano como mineral</h3>
+        <p>El ser humano es él mismo poder-cosa. Está hecho de la <em>mineralidad de los huesos</em>, el metal de la sangre, la electricidad de las neuronas. Con Vernadsky: somos <strong>«minerales andantes, hablantes»</strong> que redistribuyen oxígeno y elementos de la corteza terrestre en formas erguidas que excavan, deambulan y alteran la Tierra.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- Slide 3: Rose (1/2)                                           -->
+  <!-- ============================================================ -->
+  <section class="slide rose-zone" data-slide="3">
+    <div class="meta">
+      <span><span class="dot rose"></span><span class="author-tag rose">Rose (2012)</span> · Biopolítica en el siglo XXI · I</span>
+      <span>03 / 06</span>
+    </div>
+
+    <h2 class="slide-title rose">Biopolítica <em>molecular</em></h2>
+    <div class="slide-subtitle">La medicina abandona la clínica como centro y se desplaza al laboratorio: la vida se vuelve legible, codificable y reescribible a nivel molecular.</div>
+
+    <div class="content-grid">
+
+      <div class="section">
+        <h3>Principales interrogantes</h3>
+        <ul>
+          <li>¿Cómo se transforma la <strong>biopolítica</strong> en el siglo XXI cuando la vida se aborda a nivel <em>molecular</em>?</li>
+          <li>¿Qué saberes, prácticas y autoridades configuran la <strong>biomedicina contemporánea</strong>?</li>
+          <li>¿Cómo se reconfigura lo humano cuando los procesos vitales devienen legibles e <em>intervenibles</em>?</li>
+        </ul>
+        <p style="margin-top: 0.7rem;">Rose continúa y desplaza la analítica foucaultiana del biopoder hacia un régimen donde la administración de la vida opera por debajo del organismo, en una nueva escala de visibilidad e intervención.</p>
+      </div>
+
+      <div class="section">
+        <h3>Biopolítica molecular</h3>
+        <p><strong>Cuerpo molecularizado</strong> · El cuerpo ya no se aborda solo como organismo o sistema clínico sino como un campo de mecanismos moleculares —genes, proteínas, receptores, señales— susceptibles de ser visualizados, manipulados y rediseñados.</p>
+        <p><strong>Centralidad del laboratorio</strong> · El sitio del saber-poder se desplaza desde la cabecera del paciente hacia el banco de laboratorio: ahí se produce el conocimiento operativo sobre la vida.</p>
+        <p><strong>Estilo de pensamiento</strong> (Fleck) · No solo nuevos conceptos: un nuevo modo de ver y razonar lo vital. Un colectivo de pensamiento articula categorías, instrumentos y prácticas que hacen posible «lo molecular» como objeto.</p>
+      </div>
+
+      <div class="section">
+        <h3>Biología sistémica y sintética</h3>
+        <p>La vida deja de pensarse como mecanismo cerrado y se modela como <em>sistema abierto</em>: redes, flujos, regulaciones. La biología sintética da un paso más: si la vida es código, también puede <strong>reescribirse</strong>. Organismos diseñables, circuitos biológicos a medida, materia viva que pasa al taller de ingeniería.</p>
+      </div>
+
+      <div class="section">
+        <h3>Genómica</h3>
+        <p>La secuenciación convierte al genoma en un <em>texto</em> legible, comparable y editable. La identidad biológica se torna <strong>inscribible</strong>: portadora de información, de probabilidades, de predisposiciones. La genómica no describe pasivamente: configura nuevas formas de comprender qué somos.</p>
+        <p class="pull-quote">La vida pasa de un orden de profundidades clínicas a un orden de <em>superficies inscribibles</em>: lecturas, registros, intervenciones puntuales.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- Slide 4: Rose (2/2)                                           -->
+  <!-- ============================================================ -->
+  <section class="slide rose-zone" data-slide="4">
+    <div class="meta">
+      <span><span class="dot rose"></span><span class="author-tag rose">Rose (2012)</span> · Biopolítica en el siglo XXI · II</span>
+      <span>04 / 06</span>
+    </div>
+
+    <h2 class="slide-title rose">Tecnologías, <em>ethos</em> y bioeconomía</h2>
+    <div class="slide-subtitle">De la lectura molecular a la intervención: optimización del cuerpo, formación de subjetividades biológicas y capitalización de la vitalidad.</div>
+
+    <div class="content-grid">
+
+      <div class="section">
+        <h3>¿Qué es una tecnología? · Biotecnología</h3>
+        <p>Una <strong>tecnología</strong> es un ensamblaje de instrumentos, conocimientos, prácticas y autoridades dispuestos para actuar sobre algo con efectos específicos. No es solo aparato: es relación de poder hecha procedimiento.</p>
+        <p>La <strong>biotecnología</strong> actúa sobre la vida misma a nivel molecular. No imita la naturaleza: la <em>rehace</em>. Reconfigura el campo de lo posible biológico y, con ello, las formas de gobernarlo.</p>
+      </div>
+
+      <div class="section">
+        <h3>Dimensiones de las tecnologías moleculares</h3>
+        <p><strong>Susceptibilidad</strong> · Identificación de propensiones, predisposiciones y riesgos (genéticos, metabólicos, bioquímicos). El diagnóstico se anticipa: el sujeto deviene <em>portador de riesgos</em> modulables antes de la aparición de síntomas.</p>
+        <p><strong>Mejoramiento</strong> · Optimización de capacidades, no solo restitución de funciones perdidas. Tecnologías de <em>enhancement</em> molecular: cognitivas, afectivas, físicas. La frontera entre terapia y mejora se vuelve difusa y políticamente cargada.</p>
+      </div>
+
+      <div class="section">
+        <h3>Ethopolítica</h3>
+        <p>Política del <em>ethos</em>: las tecnologías moleculares no se aplican sobre individuos pasivos, sino que invitan a un <strong>trabajo activo sobre la propia vida</strong>: vigilarse, optimizarse, gestionarse como proyecto biológico.</p>
+        <p>Con Rabinow, Rose recupera la <strong>biosocialidad</strong>: comunidades formadas en torno a marcadores biológicos compartidos (portadores de mutaciones, pacientes con un mismo perfil de riesgo). Surgen formas de <em>ciudadanía biológica</em> que articulan derechos, identidades y demandas en torno a lo vital.</p>
+      </div>
+
+      <div class="section">
+        <h3>Bioeconomía y capitalismo</h3>
+        <p>El capitalismo contemporáneo se ha vuelto <strong>capitalismo de la biotecnología</strong>: la vida misma deviene fuente de valor. Rose llama <em>biovalor</em> al plusvalor extraído de la vitalidad biológica.</p>
+        <p><strong>Circuitos de vitalidad</strong> · Tejidos, células, líneas celulares, secuencias genéticas, datos clínicos y biobancos circulan globalmente como mercancías. La empresa capitalista captura la potencia vital y la pone a producir, articulando ciencia, mercado y subjetividad en un mismo aparato.</p>
+        <p class="pull-quote">La vida no es solo objeto de cuidado: es <em>fuente acumulable de valor</em>.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- Slide 5: Mapa conceptual                                      -->
+  <!-- ============================================================ -->
+  <section class="slide" data-slide="5">
+    <div class="meta">
+      <span>Cruces teórico-metodológicos · Bennett × Rose</span>
+      <span>05 / 06</span>
+    </div>
+
+    <h2 class="slide-title" style="background: linear-gradient(90deg, var(--bennett), var(--rose)); -webkit-background-clip: text; background-clip: text; color: transparent;">Convergencias y <em>cruces</em></h2>
+    <div class="slide-subtitle">Dos politizaciones de la materia: el poder-cosa que afecta y el saber molecular que captura — descentramientos paralelos del sujeto humano.</div>
+
+    <div class="map-wrap">
+      <svg class="map-svg" viewBox="0 0 1200 580" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Mapa conceptual de cruces entre Bennett y Rose">
+
+        <!-- Column headers -->
+        <g>
+          <rect x="50" y="20" width="380" height="68" rx="4" fill="var(--bennett-tint)" />
+          <text x="70" y="58" font-family="Fraunces, serif" font-size="34" font-style="italic" font-weight="400" fill="var(--bennett))" style="fill:#a14820;">Bennett</text>
+          <text x="70" y="80" font-family="JetBrains Mono, monospace" font-size="10" letter-spacing="2.6" fill="#5a544a">MATERIALISMO VITAL · 2022</text>
+
+          <rect x="770" y="20" width="380" height="68" rx="4" fill="var(--rose-tint)" />
+          <text x="1130" y="58" text-anchor="end" font-family="Fraunces, serif" font-size="34" font-style="italic" font-weight="400" style="fill:#1d4a5a;">Rose</text>
+          <text x="1130" y="80" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="10" letter-spacing="2.6" fill="#5a544a">BIOPOLÍTICA MOLECULAR · 2012</text>
+
+          <text x="600" y="58" text-anchor="middle" font-family="Fraunces, serif" font-size="18" font-style="italic" fill="#5a544a">— cruces —</text>
+        </g>
+
+        <!-- Vertical spine (subtle) -->
+        <line x1="600" y1="120" x2="600" y2="540" stroke="#1a1c1f" stroke-width="0.6" stroke-dasharray="1,4" opacity="0.3"/>
+
+        <!-- Row template: y, left-concept, bridge, right-concept -->
+
+        <!-- Row 1: Descentrar al humano -->
+        <g>
+          <rect x="100" y="118" width="340" height="44" rx="22" fill="rgba(161,72,32,0.10)" stroke="rgba(161,72,32,0.30)"/>
+          <text x="420" y="146" text-anchor="end" font-family="Spectral, serif" font-size="16" font-weight="500" fill="#1a1c1f">Poder-cosa &amp; actantes</text>
+
+          <path d="M 440 140 Q 480 140 500 140" fill="none" stroke="#5a544a" stroke-width="0.8" stroke-dasharray="2,3"/>
+          <circle cx="497" cy="140" r="2.2" fill="#5a544a"/>
+
+          <rect x="500" y="124" width="200" height="32" rx="16" fill="#efe7d6" stroke="#1a1c1f" stroke-width="1.1"/>
+          <text x="600" y="144" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9.5" font-weight="600" letter-spacing="2" fill="#1a1c1f">DESCENTRAR AL HUMANO</text>
+
+          <circle cx="703" cy="140" r="2.2" fill="#5a544a"/>
+          <path d="M 700 140 Q 740 140 760 140" fill="none" stroke="#5a544a" stroke-width="0.8" stroke-dasharray="2,3"/>
+
+          <rect x="760" y="118" width="340" height="44" rx="22" fill="rgba(29,74,90,0.10)" stroke="rgba(29,74,90,0.30)"/>
+          <text x="780" y="146" font-family="Spectral, serif" font-size="16" font-weight="500" fill="#1a1c1f">Cuerpo molecularizado</text>
+        </g>
+
+        <!-- Row 2: Ontología no-mecanicista -->
+        <g>
+          <rect x="100" y="195" width="340" height="44" rx="22" fill="rgba(161,72,32,0.10)" stroke="rgba(161,72,32,0.30)"/>
+          <text x="420" y="223" text-anchor="end" font-family="Spectral, serif" font-size="16" font-weight="500" fill="#1a1c1f">Materia vibrante / vital</text>
+
+          <path d="M 440 217 Q 480 217 500 217" fill="none" stroke="#5a544a" stroke-width="0.8" stroke-dasharray="2,3"/>
+          <circle cx="497" cy="217" r="2.2" fill="#5a544a"/>
+
+          <rect x="500" y="201" width="200" height="32" rx="16" fill="#efe7d6" stroke="#1a1c1f" stroke-width="1.1"/>
+          <text x="600" y="221" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" font-weight="600" letter-spacing="2" fill="#1a1c1f">ONTOLOGÍA NO-MECANICISTA</text>
+
+          <circle cx="703" cy="217" r="2.2" fill="#5a544a"/>
+          <path d="M 700 217 Q 740 217 760 217" fill="none" stroke="#5a544a" stroke-width="0.8" stroke-dasharray="2,3"/>
+
+          <rect x="760" y="195" width="340" height="44" rx="22" fill="rgba(29,74,90,0.10)" stroke="rgba(29,74,90,0.30)"/>
+          <text x="780" y="223" font-family="Spectral, serif" font-size="16" font-weight="500" fill="#1a1c1f">Vitalidad codificable / sistémica</text>
+        </g>
+
+        <!-- Row 3: Agencia distribuida -->
+        <g>
+          <rect x="100" y="272" width="340" height="44" rx="22" fill="rgba(161,72,32,0.10)" stroke="rgba(161,72,32,0.30)"/>
+          <text x="420" y="300" text-anchor="end" font-family="Spectral, serif" font-size="16" font-weight="500" fill="#1a1c1f">Ensamblajes de actantes (Latour)</text>
+
+          <path d="M 440 294 Q 480 294 500 294" fill="none" stroke="#5a544a" stroke-width="0.8" stroke-dasharray="2,3"/>
+          <circle cx="497" cy="294" r="2.2" fill="#5a544a"/>
+
+          <rect x="500" y="278" width="200" height="32" rx="16" fill="#efe7d6" stroke="#1a1c1f" stroke-width="1.1"/>
+          <text x="600" y="298" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9.5" font-weight="600" letter-spacing="2" fill="#1a1c1f">AGENCIA DISTRIBUIDA</text>
+
+          <circle cx="703" cy="294" r="2.2" fill="#5a544a"/>
+          <path d="M 700 294 Q 740 294 760 294" fill="none" stroke="#5a544a" stroke-width="0.8" stroke-dasharray="2,3"/>
+
+          <rect x="760" y="272" width="340" height="44" rx="22" fill="rgba(29,74,90,0.10)" stroke="rgba(29,74,90,0.30)"/>
+          <text x="780" y="300" font-family="Spectral, serif" font-size="16" font-weight="500" fill="#1a1c1f">Tecnologías como ensamblajes</text>
+        </g>
+
+        <!-- Row 4: Política de la vida -->
+        <g>
+          <rect x="100" y="349" width="340" height="44" rx="22" fill="rgba(161,72,32,0.10)" stroke="rgba(161,72,32,0.30)"/>
+          <text x="420" y="377" text-anchor="end" font-family="Spectral, serif" font-size="16" font-weight="500" fill="#1a1c1f">Mineralidad del humano</text>
+
+          <path d="M 440 371 Q 480 371 500 371" fill="none" stroke="#5a544a" stroke-width="0.8" stroke-dasharray="2,3"/>
+          <circle cx="497" cy="371" r="2.2" fill="#5a544a"/>
+
+          <rect x="500" y="355" width="200" height="32" rx="16" fill="#efe7d6" stroke="#1a1c1f" stroke-width="1.1"/>
+          <text x="600" y="375" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" font-weight="600" letter-spacing="2" fill="#1a1c1f">POLÍTICA DE LA VIDA · POST-FOUCAULT</text>
+
+          <circle cx="703" cy="371" r="2.2" fill="#5a544a"/>
+          <path d="M 700 371 Q 740 371 760 371" fill="none" stroke="#5a544a" stroke-width="0.8" stroke-dasharray="2,3"/>
+
+          <rect x="760" y="349" width="340" height="44" rx="22" fill="rgba(29,74,90,0.10)" stroke="rgba(29,74,90,0.30)"/>
+          <text x="780" y="377" font-family="Spectral, serif" font-size="16" font-weight="500" fill="#1a1c1f">Ethopolítica · subjetivación biológica</text>
+        </g>
+
+        <!-- Row 5: Economía de la materia -->
+        <g>
+          <rect x="100" y="426" width="340" height="44" rx="22" fill="rgba(161,72,32,0.10)" stroke="rgba(161,72,32,0.30)"/>
+          <text x="420" y="454" text-anchor="end" font-family="Spectral, serif" font-size="16" font-weight="500" fill="#1a1c1f">Ecología no-jerárquica</text>
+
+          <path d="M 440 448 Q 480 448 500 448" fill="none" stroke="#5a544a" stroke-width="0.8" stroke-dasharray="2,3"/>
+          <circle cx="497" cy="448" r="2.2" fill="#5a544a"/>
+
+          <rect x="500" y="432" width="200" height="32" rx="16" fill="#efe7d6" stroke="#1a1c1f" stroke-width="1.1"/>
+          <text x="600" y="452" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9.5" font-weight="600" letter-spacing="2" fill="#1a1c1f">ECONOMÍA DE LA MATERIA</text>
+
+          <circle cx="703" cy="448" r="2.2" fill="#5a544a"/>
+          <path d="M 700 448 Q 740 448 760 448" fill="none" stroke="#5a544a" stroke-width="0.8" stroke-dasharray="2,3"/>
+
+          <rect x="760" y="426" width="340" height="44" rx="22" fill="rgba(29,74,90,0.10)" stroke="rgba(29,74,90,0.30)"/>
+          <text x="780" y="454" font-family="Spectral, serif" font-size="16" font-weight="500" fill="#1a1c1f">Bioeconomía · biovalor</text>
+        </g>
+
+        <!-- Bottom contrast band -->
+        <g>
+          <line x1="50" y1="510" x2="1150" y2="510" stroke="#1a1c1f" stroke-width="0.5" opacity="0.3"/>
+          <text x="100" y="540" font-family="Fraunces, serif" font-size="13" font-style="italic" fill="#a14820">
+            <tspan font-weight="600" font-style="normal" font-family="JetBrains Mono, monospace" font-size="10" letter-spacing="1.5">DIVERGE → </tspan>
+            <tspan>Bennett da voz a las cosas; horizonte ético-ecológico inmanente.</tspan>
+          </text>
+          <text x="1100" y="540" text-anchor="end" font-family="Fraunces, serif" font-size="13" font-style="italic" fill="#1d4a5a">
+            <tspan>Rose mapea cómo el saber molecular convierte la vida en blanco político-económico.</tspan>
+            <tspan font-weight="600" font-style="normal" font-family="JetBrains Mono, monospace" font-size="10" letter-spacing="1.5"> ← DIVERGE</tspan>
+          </text>
+        </g>
+
+      </svg>
+      <div class="map-caption">Ambos descentran al sujeto soberano y politizan la materia. Donde Bennett insiste en la vitalidad <em>de</em> las cosas, Rose rastrea cómo la vitalidad es <em>capturada</em> por dispositivos técnico-económicos.</div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- Slide 6: Referencias                                          -->
+  <!-- ============================================================ -->
+  <section class="slide" data-slide="6">
+    <div class="meta">
+      <span>Referencias bibliográficas · APA 7</span>
+      <span>06 / 06</span>
+    </div>
+
+    <h2 class="slide-title">Referencias</h2>
+    <div class="ref-intro">Material discutido en el Seminario 6. Citas en formato APA 7.</div>
+
+    <div class="ref-list">
+      <div class="ref-item bennett">
+        <span class="num">[01] · Materialismo vital</span>
+        <span class="author">Bennett, J.</span> (2022). La fuerza de las cosas. En <em>Materia vibrante: una ecología política de las cosas</em> (M. Gonnet, Trad.). Caja Negra.
+      </div>
+      <div class="ref-item rose">
+        <span class="num">[02] · Biopolítica molecular</span>
+        <span class="author">Rose, N.</span> (2012). Biopolítica en el siglo XXI. En <em>Políticas de la vida: biomedicina, poder y subjetividad en el siglo XXI</em> (E. Luján Odriozola, Trad.). UNIPE: Editorial Universitaria.
+      </div>
+    </div>
+
+    <div style="margin-top: auto; padding-top: 2rem; border-top: 1px solid var(--hairline); display: flex; justify-content: space-between; align-items: baseline; font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--ink-soft);">
+      <span>SOL316 · Sociedad, Naturaleza y Tecnología</span>
+      <span>Vicente Mühlenbrock · Mayo 2026</span>
+    </div>
+  </section>
+
+</div>
+
+<nav class="nav" aria-label="Navegación de diapositivas">
+  <button id="prev" aria-label="Anterior">‹</button>
+  <span class="dots" id="dots"></span>
+  <span class="counter" id="counter">01 / 06</span>
+  <button id="next" aria-label="Siguiente">›</button>
+</nav>
+
+<div class="hint">← → para navegar</div>
+
+<script>
+(function() {
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const prev = document.getElementById('prev');
+  const next = document.getElementById('next');
+  const counter = document.getElementById('counter');
+  const dotsContainer = document.getElementById('dots');
+  let idx = 0;
+
+  // build dots
+  slides.forEach((_, i) => {
+    const d = document.createElement('span');
+    d.className = 'd' + (i === 0 ? ' on' : '');
+    d.addEventListener('click', () => show(i));
+    dotsContainer.appendChild(d);
+  });
+  const dots = Array.from(dotsContainer.children);
+
+  function show(i) {
+    i = Math.max(0, Math.min(slides.length - 1, i));
+    slides[idx].classList.remove('active');
+    dots[idx].classList.remove('on');
+    idx = i;
+    slides[idx].classList.add('active');
+    dots[idx].classList.add('on');
+    counter.textContent = String(idx + 1).padStart(2, '0') + ' / ' + String(slides.length).padStart(2, '0');
+    prev.disabled = idx === 0;
+    next.disabled = idx === slides.length - 1;
+    // scroll slide to top in case user scrolled
+    slides[idx].scrollTop = 0;
+  }
+
+  prev.addEventListener('click', () => show(idx - 1));
+  next.addEventListener('click', () => show(idx + 1));
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'PageDown') { e.preventDefault(); show(idx + 1); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); show(idx - 1); }
+    else if (e.key === 'Home') { e.preventDefault(); show(0); }
+    else if (e.key === 'End') { e.preventDefault(); show(slides.length - 1); }
+  });
+
+  show(0);
+})();
+</script>
+
+</body>
+</html>
